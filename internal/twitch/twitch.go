@@ -30,7 +30,6 @@ const CLIENT_ID = "4u4v1h8d2yfvftoqtstu0pley1pooo"
 const IRC_TWITCH_SERVER = "irc.chat.twitch.tv:6667"
 
 func GetAuthorization() {
-	fmt.Println("test")
 	var err error
 	switch runtime.GOOS {
 	case "linux":
@@ -49,7 +48,7 @@ func GetAuthorization() {
 var Active = false
 
 func SubscribeToChat(token string) {
-	broadcasterid, login, err := GetBroadcasterId(token)
+	_, login, err := GetBroadcasterId(token)
 	if err != nil {
 		log.Fatal("Error retrieving broadcaster id", err)
 	}
@@ -58,14 +57,12 @@ func SubscribeToChat(token string) {
 	if err != nil {
 		log.Fatal("Error conectandose a IRC", err)
 	}
-	//defer conn.Close()
 
 	fmt.Fprintf(conn, "PASS %s\r\n", "oauth:"+token)
 	fmt.Fprintf(conn, "NICK %s\r\n", login)
 	fmt.Fprintf(conn, "JOIN #%s\r\n", login)
-
+	common.SetConnected()
 	reader := bufio.NewReader(conn)
-	fmt.Println(broadcasterid)
 	go func() {
 		for {
 			line, err := reader.ReadString('\n')
@@ -111,8 +108,6 @@ func GetBroadcasterId(token string) (string, string, error) {
 		return "", "", err
 	}
 	defer resp.Body.Close()
-
-	fmt.Println("Response status:", resp.Status)
 
 	var result common.Response
 

@@ -24,6 +24,7 @@ func StartWebServer() {
 	if err := http.ListenAndServe(":9000", nil); err != nil {
 		log.Fatal("Error")
 	}
+
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

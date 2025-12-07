@@ -15,6 +15,7 @@ import (
 
 	"ac-tts/internal/animalese"
 	"ac-tts/internal/assets"
+	"ac-tts/internal/common"
 )
 
 var UserMap = make(map[string]float64)
@@ -30,7 +31,7 @@ func Reproduce(text string, user string) {
 		panic(err)
 	}
 	println(text)
-	wave := ani.AnimaleseFunc(text, true, GetPitchForUser(user))
+	wave := ani.AnimaleseFunc(text, true, common.Pitch)
 
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
 	if err != nil {
