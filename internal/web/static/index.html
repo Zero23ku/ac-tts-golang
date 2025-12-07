@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Receiving token...</h1>
+</body>
+<script>
+    const url = window.location.hash
+    const params = new URLSearchParams(url.substring(1))
+    const token = params.get("access_token")
+    console.log(token)
+    fetch("http://localhost:9000/access-token?access_token="+token)
+    .then(response =>{
+        if(response.ok) {
+            window.close()
+        }
+    })
+    .catch(err => console.error(err))
+
+</script>
+</html>
