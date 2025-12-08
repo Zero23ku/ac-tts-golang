@@ -21,7 +21,8 @@ jobs:
             libasound2-dev \
             libgl1-mesa-dev \
             libglfw3-dev \
-            xorg-dev
+            xorg-dev \
+            gcc-mingw-w64-x86-64
 
       - name: Set up environment
         uses: actions/setup-go@v5
