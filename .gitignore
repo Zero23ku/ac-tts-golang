@@ -1,2 +1,4 @@
 *.out
 *.exe
+# Added by goreleaser init:
+dist/
