@@ -22,8 +22,7 @@ jobs:
             libgl1-mesa-dev \
             libglfw3-dev \
             xorg-dev \
-            gcc-mingw-w64-x86-64 \
-            base-devel pkgconf alsa-lib mesa glfw-x11
+            gcc-mingw-w64-x86-64
 
       - name: Set up environment
         uses: actions/setup-go@v5
