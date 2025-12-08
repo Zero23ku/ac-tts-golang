@@ -3,14 +3,21 @@
 How to build
 
 ```
-$go mod tidy
-$go build -o app
+go mod tidy
+go build -o app
 ```
 
 How to build for Windows under Linux
 
 ```
 CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc go build -o app.exe
+```
+
+Also, you can use the Makefile
+
+```
+Makefile deps
+Makefile build
 ```
 
 

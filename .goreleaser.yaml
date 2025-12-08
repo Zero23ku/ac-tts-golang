@@ -33,7 +33,7 @@ builds:
       - windows
     goarch:
       - amd64
-    binary: "ac-tts-{{ .Version }}.exe"
+    binary: "ac-tts-{{ .Version }}"
 
 
 archives:
