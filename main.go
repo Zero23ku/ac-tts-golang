@@ -19,6 +19,8 @@ import (
 	"ac-tts/internal/web"
 )
 
+var Version = "dev"
+
 func main() {
 
 	a := app.New()
