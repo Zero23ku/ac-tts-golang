@@ -15,6 +15,7 @@ import (
 	"ac-tts/internal/animalese"
 	"ac-tts/internal/assets"
 	"ac-tts/internal/common"
+	"ac-tts/internal/logging"
 )
 
 var UserMap = make(map[string]float64)
@@ -26,6 +27,7 @@ func Reproduce(text string, user string) {
 	})
 
 	if err != nil {
+		logging.CreateLog(err)
 		log.Fatal(err)
 		panic(err)
 	}
@@ -33,6 +35,7 @@ func Reproduce(text string, user string) {
 
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
 	if err != nil {
+		logging.CreateLog(err)
 		log.Fatal(err)
 	}
 	defer streamer.Close()

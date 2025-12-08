@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"ac-tts/internal/common"
+	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
 )
 
@@ -40,6 +41,7 @@ func GetAuthorization() {
 		err = fmt.Errorf("unsupported platform")
 	}
 	if err != nil {
+		logging.CreateLog(err)
 		log.Fatal(err)
 	}
 
@@ -50,11 +52,13 @@ var Active = false
 func SubscribeToChat(token string) {
 	_, login, err := GetBroadcasterId(token)
 	if err != nil {
+		logging.CreateLog(err)
 		log.Fatal("Error retrieving broadcaster id", err)
 	}
 
 	conn, err := net.Dial("tcp", IRC_TWITCH_SERVER)
 	if err != nil {
+		logging.CreateLog(err)
 		log.Fatal("Error conectandose a IRC", err)
 	}
 
@@ -67,6 +71,7 @@ func SubscribeToChat(token string) {
 		for {
 			line, err := reader.ReadString('\n')
 			if err != nil {
+				logging.CreateLog(err)
 				log.Fatal(err)
 			}
 			splitted := strings.Split(line, "#")
@@ -92,6 +97,7 @@ func GetBroadcasterId(token string) (string, string, error) {
 
 	req, err := http.NewRequest("GET", TWITCH_BROADCASTER_ID, nil)
 	if err != nil {
+		logging.CreateLog(err)
 		log.Fatal("Error creating request", err)
 		return "", "", err
 	}
@@ -102,6 +108,7 @@ func GetBroadcasterId(token string) (string, string, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
+		logging.CreateLog(err)
 		log.Fatal("Error sending request", err)
 		return "", "", err
 	}
@@ -110,6 +117,7 @@ func GetBroadcasterId(token string) (string, string, error) {
 	var result common.Response
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		logging.CreateLog(err)
 		log.Fatal("Error decoding JSON response", err)
 		return "", "", err
 	}

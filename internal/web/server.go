@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"ac-tts/internal/logging"
 	"ac-tts/internal/twitch"
 )
 
@@ -21,6 +22,7 @@ func StartWebServer() {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		data, err := staticFiles.ReadFile("static/index.html")
 		if err != nil {
+			logging.CreateLog(err)
 			http.Error(w, "index.html not found", http.StatusNotFound)
 			return
 		}
@@ -52,6 +54,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		time.Sleep(500 * time.Millisecond)
 		if err := srv.Shutdown(context.Background()); err != nil {
+			logging.CreateLog(err)
 			log.Fatal("Error shutting down server..", err)
 		}
 	}()

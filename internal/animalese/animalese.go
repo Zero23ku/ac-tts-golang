@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 	"unicode"
+
+	"ac-tts/internal/logging"
 )
 
 type Animalese struct {
@@ -77,6 +79,7 @@ func (a *Animalese) AnimaleseFunc(script string, shorten bool, pitch float64) []
 func NewAnimalese(lettersFile string, onload func()) (*Animalese, error) {
 	file, err := os.Open(lettersFile)
 	if err != nil {
+		logging.CreateLog(err)
 		return nil, err
 	}
 	defer file.Close()
@@ -84,6 +87,7 @@ func NewAnimalese(lettersFile string, onload func()) (*Animalese, error) {
 	header := make([]byte, 44)
 	_, err = io.ReadFull(file, header)
 	if err != nil {
+		logging.CreateLog(err)
 		return nil, err
 	}
 
@@ -96,6 +100,7 @@ func NewAnimalese(lettersFile string, onload func()) (*Animalese, error) {
 	data := make([]byte, subChunk2Size)
 	_, err = io.ReadFull(file, data)
 	if err != nil {
+		logging.CreateLog(err)
 		return nil, err
 	}
 

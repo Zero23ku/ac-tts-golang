@@ -14,6 +14,7 @@ import (
 	"ac-tts/internal/animalese"
 	"ac-tts/internal/assets"
 	"ac-tts/internal/common"
+	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
 	"ac-tts/internal/twitch"
 	"ac-tts/internal/web"
@@ -34,6 +35,7 @@ func main() {
 
 	})
 	if err != nil {
+		logging.CreateLog(err)
 		log.Fatal(err)
 		panic(err)
 	}
@@ -41,6 +43,7 @@ func main() {
 	wave := ani.AnimaleseFunc("test", true, 1.0)
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
 	if err != nil {
+		logging.CreateLog(err)
 		log.Fatal(err)
 	}
 	defer streamer.Close()
