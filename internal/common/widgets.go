@@ -9,6 +9,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
 	"ac-tts/internal/assets"
@@ -50,7 +51,7 @@ func initPitchSlider(pitchData binding.Float) {
 func initLeftPitchLabel() {
 	leftSpacer = canvas.NewRectangle(color.Transparent)
 	leftSpacer.SetMinSize(fyne.NewSize(20, 0))
-	pitchLabel = canvas.NewText("Voice Pitch", color.White)
+	pitchLabel = canvas.NewText("Voice Pitch", theme.Color(theme.ColorNameForeground))
 	left = container.NewHBox(leftSpacer, pitchLabel)
 	PitchRow = container.New(
 		layout.NewBorderLayout(nil, nil, left, nil),
