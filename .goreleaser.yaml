@@ -51,6 +51,9 @@ archives:
     format_overrides:
       - goos: windows
         formats: [zip]
+    files:
+      - src: ./README.txt
+        dst: README.txt
 
 changelog:
   sort: asc
