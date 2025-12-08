@@ -20,12 +20,14 @@ var PitchSlider *widget.Slider
 var PitchRow *fyne.Container
 var KofiButton *widget.Button
 var TestPitchButton *widget.Button
+var UpdateButton *widget.Button
 
 // Internal
 var leftSpacer *canvas.Rectangle
 var left *fyne.Container
 var pitchLabel *canvas.Text
 var kofiUrl *url.URL
+var githubUrl *url.URL
 
 func InitTestPitchButton(onClick func()) {
 	TestPitchButton = widget.NewButton("Test Voice", onClick)
@@ -77,4 +79,18 @@ func InitKofiButton() {
 	KofiButton = widget.NewButtonWithIcon("Support me!", res, func() {
 		fyne.CurrentApp().OpenURL(kofiUrl)
 	})
+}
+
+func InitUpdateButton() {
+
+	githubUrl = &url.URL{
+		Scheme: "https",
+		Host:   "github.com",
+		Path:   "/Zero23ku/ac-tts-golang/releases",
+	}
+
+	UpdateButton = widget.NewButton("New Version Avaible", func() {
+		fyne.CurrentApp().OpenURL(githubUrl)
+	})
+
 }

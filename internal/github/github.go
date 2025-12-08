@@ -2,7 +2,6 @@ package github
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -13,7 +12,7 @@ import (
 
 var releaseURL = "https://api.github.com/repos/Zero23ku/ac-tts-golang/tags"
 
-func GetLatestReleaseVersion() {
+func GetLatestReleaseVersion() string {
 	res, err := http.Get(releaseURL)
 
 	if err != nil {
@@ -38,6 +37,7 @@ func GetLatestReleaseVersion() {
 	}
 
 	if len(response) > 0 {
-		fmt.Println(response[0].Name)
+		return response[0].Name
 	}
+	return ""
 }

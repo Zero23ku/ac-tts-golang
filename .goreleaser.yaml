@@ -24,6 +24,8 @@ builds:
     goarch:
       - amd64
     binary: "ac-tts-{{ .Version }}"
+    ldflags:
+      - "-X 'ac-tts-golang/internal/twitch.ClientID={{ .Env.TWITCH_CLIENT_ID }}'"
 
   - id: windows
     env:
@@ -34,6 +36,8 @@ builds:
     goarch:
       - amd64
     binary: "ac-tts-{{ .Version }}"
+    ldflags:
+      - "-X 'ac-tts-golang/internal/twitch.ClientID={{ .Env.TWITCH_CLIENT_ID }}'"
 
 
 archives:

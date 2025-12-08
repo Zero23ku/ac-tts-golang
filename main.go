@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"log"
+	"strconv"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -21,10 +23,19 @@ import (
 	"ac-tts/internal/web"
 )
 
-var Version = "dev"
+var version = "v0.0.2"
+var updateTime = false
 
 func main() {
-	github.GetLatestReleaseVersion()
+	onlineVersion := github.GetLatestReleaseVersion()
+
+	if onlineVersion != "" {
+		updateTime = needUpdate(version, onlineVersion)
+		if updateTime {
+			common.InitUpdateButton()
+		}
+	}
+
 	a := app.New()
 	w := a.NewWindow("AC - Text to Speech for Twitch :)")
 
@@ -67,8 +78,13 @@ func main() {
 		common.PitchRow,
 		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton)),
 	)
+	var footer *fyne.Container
+	if updateTime {
+		footer = container.NewVBox(common.UpdateButton, common.KofiButton)
+	} else {
+		footer = container.NewVBox(common.KofiButton)
+	}
 
-	footer := container.NewCenter(common.KofiButton)
 	w.SetIcon(icon)
 	w.SetContent(
 		container.New(
@@ -79,4 +95,39 @@ func main() {
 	)
 	w.ShowAndRun()
 
+}
+
+func needUpdate(current string, online string) bool {
+
+	currentParts := getVersionSplitted(current)
+	onlineParts := getVersionSplitted(online)
+
+	mayorCurrent, _ := strconv.Atoi(currentParts[0])
+	mayorOnline, _ := strconv.Atoi(onlineParts[0])
+
+	minorCurrent, _ := strconv.Atoi(currentParts[1])
+	minorOnline, _ := strconv.Atoi(onlineParts[1])
+
+	patchCurrent, _ := strconv.Atoi(currentParts[2])
+	patchOnline, _ := strconv.Atoi(onlineParts[2])
+
+	if mayorCurrent < mayorOnline {
+		return true
+	}
+
+	if minorCurrent < minorOnline {
+		return true
+	}
+
+	if patchCurrent < patchOnline {
+		return true
+	}
+
+	return false
+
+}
+
+func getVersionSplitted(version string) []string {
+	trimmed := strings.TrimPrefix(version, "v")
+	return strings.Split(trimmed, ".")
 }
