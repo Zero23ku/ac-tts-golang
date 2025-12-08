@@ -2,6 +2,7 @@ package common
 
 import (
 	"image/color"
+	"net/url"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -14,11 +15,13 @@ import (
 var ConnectButton *widget.Button
 var PitchSlider *widget.Slider
 var PitchRow *fyne.Container
+var KofiButton *widget.Button
 
 // Internal
 var leftSpacer *canvas.Rectangle
 var left *fyne.Container
 var pitchLabel *canvas.Text
+var kofiUrl *url.URL
 
 func InitConnectButton(onClick func()) {
 	ConnectButton = widget.NewButton("Connect to Twitch", onClick)
@@ -50,4 +53,15 @@ func initLeftPitchLabel() {
 func InitPitchRow(pitchData binding.Float) {
 	initPitchSlider(pitchData)
 	initLeftPitchLabel()
+}
+
+func InitKofiButton(res fyne.Resource) {
+	kofiUrl = &url.URL{
+		Scheme: "https",
+		Host:   "ko-fi.com",
+		Path:   "/I3I41O6OUD",
+	}
+	KofiButton = widget.NewButtonWithIcon("Support me!", res, func() {
+		fyne.CurrentApp().OpenURL(kofiUrl)
+	})
 }

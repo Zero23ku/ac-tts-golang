@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/layout"
 	"github.com/faiface/beep/wav"
 
 	"ac-tts/internal/animalese"
@@ -20,9 +21,8 @@ import (
 
 func main() {
 
-	// Crear la aplicación
 	a := app.New()
-	w := a.NewWindow("AC - Text to Speech :)")
+	w := a.NewWindow("AC - Text to Speech for Twitch :)")
 
 	go func() {
 		web.StartWebServer()
@@ -48,11 +48,23 @@ func main() {
 	common.InitPitchRow(pitchData)
 
 	common.InitConnectButton(func() { twitch.GetAuthorization() })
-	w.Resize(fyne.NewSize(400, 400))
+	w.Resize(fyne.NewSize(400, 200))
+
+	res, _ := fyne.LoadResourceFromPath("cup-border.png")
+	common.InitKofiButton(res)
+
+	content := container.NewVBox(
+		common.PitchRow,
+		container.NewCenter(common.ConnectButton),
+	)
+
+	footer := container.NewCenter(common.KofiButton)
+
 	w.SetContent(
-		container.NewVBox(
-			common.PitchRow,
-			container.NewCenter(common.ConnectButton),
+		container.New(
+			layout.NewBorderLayout(nil, footer, nil, nil),
+			footer,
+			container.NewStack(content),
 		),
 	)
 	w.ShowAndRun()
