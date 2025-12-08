@@ -1,3 +1,3 @@
 package common
 
-var Pitch = 1.0
+var Pitch = 1.2

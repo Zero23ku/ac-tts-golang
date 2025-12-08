@@ -2,7 +2,6 @@ package reproductor
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"math/rand"
 	"sync"
@@ -30,7 +29,6 @@ func Reproduce(text string, user string) {
 		log.Fatal(err)
 		panic(err)
 	}
-	println(text)
 	wave := ani.AnimaleseFunc(text, true, common.Pitch)
 
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
@@ -58,7 +56,6 @@ func Reproduce(text string, user string) {
 }
 
 func GetPitchForUser(user string) float64 {
-	fmt.Println(user)
 	if value, ok := UserMap[user]; ok {
 
 		return value

@@ -69,10 +69,8 @@ func SubscribeToChat(token string) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			//fmt.Println(line)
 			splitted := strings.Split(line, "#")
 			if len(splitted) == 2 {
-				fmt.Println(splitted[1])
 				message := strings.Split(splitted[1], ":")
 				if len(message) == 2 {
 					if Active {

@@ -46,20 +46,24 @@ func main() {
 
 	pitchData := binding.BindFloat(&common.Pitch)
 	common.InitPitchRow(pitchData)
+	common.InitTestPitchButton(func() {
+		reproductor.Reproduce("Hola esto es una prueba de pitch :)", "")
+	})
 
 	common.InitConnectButton(func() { twitch.GetAuthorization() })
 	w.Resize(fyne.NewSize(400, 200))
 
-	res, _ := fyne.LoadResourceFromPath("cup-border.png")
-	common.InitKofiButton(res)
+	icon := fyne.NewStaticResource("icon.png", assets.Icon)
+
+	common.InitKofiButton()
 
 	content := container.NewVBox(
 		common.PitchRow,
-		container.NewCenter(common.ConnectButton),
+		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton)),
 	)
 
 	footer := container.NewCenter(common.KofiButton)
-
+	w.SetIcon(icon)
 	w.SetContent(
 		container.New(
 			layout.NewBorderLayout(nil, footer, nil, nil),

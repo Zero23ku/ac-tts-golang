@@ -1,9 +1,11 @@
 package web
 
 import (
+	"context"
 	"embed"
 	"log"
 	"net/http"
+	"time"
 
 	"ac-tts/internal/twitch"
 )
@@ -11,18 +13,29 @@ import (
 //go:embed static/*
 var staticFiles embed.FS
 
+var srv *http.Server
+
 func StartWebServer() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		data, err := staticFiles.ReadFile("static/index.html")
 		if err != nil {
-			http.Error(w, "index.html no encontrado", http.StatusInternalServerError)
+			http.Error(w, "index.html not found", http.StatusNotFound)
 			return
 		}
 		w.Write(data)
 	})
-	http.HandleFunc("/access-token", handler)
-	if err := http.ListenAndServe(":9000", nil); err != nil {
-		log.Fatal("Error")
+
+	mux.HandleFunc("/access-token", handler)
+
+	srv = &http.Server{
+		Addr:    ":9000",
+		Handler: mux,
+	}
+
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal("Error initializing server...", err)
 	}
 
 }
@@ -35,4 +48,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		twitch.SubscribeToChat(token)
 	}
+
+	go func() {
+		time.Sleep(500 * time.Millisecond)
+		if err := srv.Shutdown(context.Background()); err != nil {
+			log.Fatal("Error shutting down server..", err)
+		}
+	}()
+
 }
