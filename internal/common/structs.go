@@ -53,3 +53,16 @@ type Event struct {
 	MessageId            string  `json:"message_id"`
 	Message              Message `json:"message"`
 }
+
+type Commit struct {
+	Sha string `json:"sha"`
+	Url string `json:"url"`
+}
+
+type Release struct {
+	Name       string `json:"name"`
+	ZipballUrl string `json:"zipball_url"`
+	TarballUrl string `json:"tarball_url"`
+	Commit     Commit `json:"commit"`
+	nodeId     string `json:"node_id"`
+}

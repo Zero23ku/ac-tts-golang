@@ -14,6 +14,7 @@ import (
 	"ac-tts/internal/animalese"
 	"ac-tts/internal/assets"
 	"ac-tts/internal/common"
+	"ac-tts/internal/github"
 	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
 	"ac-tts/internal/twitch"
@@ -23,7 +24,7 @@ import (
 var Version = "dev"
 
 func main() {
-
+	github.GetLatestReleaseVersion()
 	a := app.New()
 	w := a.NewWindow("AC - Text to Speech for Twitch :)")
 
