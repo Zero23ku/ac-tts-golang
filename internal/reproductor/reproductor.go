@@ -27,7 +27,7 @@ func Reproduce(text string, user string) {
 	})
 
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("reproductor - initializing animaleses", err)
 		log.Fatal(err)
 		panic(err)
 	}
@@ -35,7 +35,7 @@ func Reproduce(text string, user string) {
 
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("reproductor - creating wav", err)
 		log.Fatal(err)
 	}
 	defer streamer.Close()

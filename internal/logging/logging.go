@@ -11,7 +11,7 @@ var extension = ".txt"
 var timeFormat = "02-01-2006-15:04:05"
 var newLine = "\n"
 
-func CreateLog(err error) {
+func CreateLog(place string, err error) {
 	t := time.Now()
 	tFormat := t.Format(timeFormat)
 	fileName := logName + tFormat + extension
@@ -24,7 +24,7 @@ func CreateLog(err error) {
 	}
 	defer file.Close()
 
-	log := tFormat + newLine + err.Error() + newLine
+	log := tFormat + "-" + place + newLine + err.Error() + newLine
 	if _, writeErr := file.WriteString(log); writeErr != nil {
 		//WHAT IS HAPPENING AAAAA
 		panic(writeErr)

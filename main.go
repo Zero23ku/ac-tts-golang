@@ -47,7 +47,7 @@ func main() {
 
 	})
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("main - Initializing animalese", err)
 		log.Fatal(err)
 		panic(err)
 	}
@@ -55,7 +55,7 @@ func main() {
 	wave := ani.AnimaleseFunc("test", true, 1.0)
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("main - testing Animalese", err)
 		log.Fatal(err)
 	}
 	defer streamer.Close()

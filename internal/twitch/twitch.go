@@ -41,7 +41,7 @@ func GetAuthorization() {
 		err = fmt.Errorf("unsupported platform")
 	}
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("twtich - unsupported platform", err)
 		log.Fatal(err)
 	}
 
@@ -52,13 +52,13 @@ var Active = false
 func SubscribeToChat(token string) {
 	_, login, err := GetBroadcasterId(token)
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("twitch - couldn't get broadcaster info", err)
 		log.Fatal("Error retrieving broadcaster id", err)
 	}
 
 	conn, err := net.Dial("tcp", IRC_TWITCH_SERVER)
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("twitch - couldn't connect to twitch chat", err)
 		log.Fatal("Error conectandose a IRC", err)
 	}
 
@@ -70,8 +70,11 @@ func SubscribeToChat(token string) {
 	go func() {
 		for {
 			line, err := reader.ReadString('\n')
+			if strings.HasPrefix(line, "PING") {
+				fmt.Fprintf(conn, "PONG :tmi.twitch.tv\r\n")
+			}
 			if err != nil {
-				logging.CreateLog(err)
+				logging.CreateLog("twitch - couldn't get new message in chat", err)
 				log.Fatal(err)
 			}
 			splitted := strings.Split(line, "#")
@@ -97,7 +100,7 @@ func GetBroadcasterId(token string) (string, string, error) {
 
 	req, err := http.NewRequest("GET", TWITCH_BROADCASTER_ID, nil)
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("twitch - couldn't create HTTP request", err)
 		log.Fatal("Error creating request", err)
 		return "", "", err
 	}
@@ -108,7 +111,7 @@ func GetBroadcasterId(token string) (string, string, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("twitch - couldn't make HTTP request", err)
 		log.Fatal("Error sending request", err)
 		return "", "", err
 	}
@@ -117,7 +120,7 @@ func GetBroadcasterId(token string) (string, string, error) {
 	var result common.Response
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("twitch - couldn't deserealize response", err)
 		log.Fatal("Error decoding JSON response", err)
 		return "", "", err
 	}

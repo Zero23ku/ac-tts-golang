@@ -16,7 +16,7 @@ func GetLatestReleaseVersion() string {
 	res, err := http.Get(releaseURL)
 
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("github - couldn't make HTTP request", err)
 		log.Fatal(err)
 	}
 
@@ -25,14 +25,14 @@ func GetLatestReleaseVersion() string {
 	body, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("github - couldn't deserealize response", err)
 		log.Fatal(err)
 	}
 
 	var response []common.Release
 
 	if err := json.Unmarshal(body, &response); err != nil {
-		logging.CreateLog(err)
+		logging.CreateLog("github - couldn't transform response", err)
 		log.Fatal(err)
 	}
 
