@@ -23,7 +23,7 @@ import (
 	"ac-tts/internal/web"
 )
 
-var version = "v0.0.2"
+var version = "v0.1.2"
 var updateTime = false
 
 func main() {
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	a := app.New()
-	w := a.NewWindow("AC - Text to Speech for Twitch :)")
+	w := a.NewWindow("AC - Text to Speech for Twitch :) - " + version)
 
 	go func() {
 		web.StartWebServer()
