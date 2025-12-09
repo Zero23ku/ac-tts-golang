@@ -14,6 +14,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 
 	"ac-tts/internal/assets"
+	"ac-tts/internal/youtube"
 )
 
 var ConnectButton *widget.Button
@@ -123,12 +124,26 @@ func initYoutubeWindow(app fyne.App) {
 	ytApiKeyInput := widget.NewEntry()
 	ytApiKeyInput.SetPlaceHolder("Enter your Youtube's API Key here")
 	ytApiKeyInput.Resize(fyne.NewSize(100, ytApiKeyInput.MinSize().Height))
+
+	ytVideoInput := widget.NewEntry()
+	ytVideoInput.SetPlaceHolder("Enter Livestream's url: https://www.youtube.com/watch?v=your-id")
+	ytVideoInput.Resize(fyne.NewSize(100, ytVideoInput.MinSize().Height))
+
 	ytApiKeySubmit := widget.NewButton("Submit Key", func() {
+		//TODO: Guardarlos
 		fmt.Println(ytApiKeyInput.Text)
+		fmt.Println(ytVideoInput.Text)
+		youtube.API_KEY = ytApiKeyInput.Text
+		youtube.VIDEO_ID = ytVideoInput.Text
+		youtube.GetYTChannelInfo()
 	})
 
 	form := widget.NewForm(
 		widget.NewFormItem("Youtube's API Key", ytApiKeyInput),
+	)
+
+	formVide := widget.NewForm(
+		widget.NewFormItem("Youtube livestream URL", ytVideoInput),
 	)
 
 	centeredButton := container.New(
@@ -136,6 +151,6 @@ func initYoutubeWindow(app fyne.App) {
 		ytApiKeySubmit,
 	)
 
-	YoutubeWindow.SetContent(container.NewVBox(form, centeredButton))
+	YoutubeWindow.SetContent(container.NewVBox(form, formVide, centeredButton))
 	YoutubeWindow.Resize(fyne.NewSize(400, 100))
 }
