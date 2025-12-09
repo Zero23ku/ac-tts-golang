@@ -17,21 +17,20 @@ import (
 	"ac-tts/internal/reproductor"
 )
 
-var CLIENT_ID string
-
-var TWITCH_URL = "https://id.twitch.tv/oauth2/authorize" +
+const TWITCH_URL = "https://id.twitch.tv/oauth2/authorize" +
 	"?response_type=token" +
-	"&client_id=" + CLIENT_ID +
+	"&client_id=4u4v1h8d2yfvftoqtstu0pley1pooo" +
 	"&redirect_uri=http://localhost:9000" +
 	"&scope=chat:read+chat:edit" +
 	"&state=c3ab8aa609ea11e793ae92361f002671"
 
 const TWITCH_BROADCASTER_ID = "https://api.twitch.tv/helix/users"
 
+const CLIENT_ID = "4u4v1h8d2yfvftoqtstu0pley1pooo"
+
 const IRC_TWITCH_SERVER = "irc.chat.twitch.tv:6667"
 
 func GetAuthorization() {
-
 	var err error
 	switch runtime.GOOS {
 	case "linux":
