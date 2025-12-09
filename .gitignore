@@ -3,3 +3,4 @@
 # Added by goreleaser init:
 dist/
 .env
+app*

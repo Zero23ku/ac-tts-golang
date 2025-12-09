@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"image/color"
 	"net/url"
 
@@ -21,6 +22,9 @@ var PitchRow *fyne.Container
 var KofiButton *widget.Button
 var TestPitchButton *widget.Button
 var UpdateButton *widget.Button
+var YoutubeWindow fyne.Window
+var ConnectYTButton *widget.Button
+var AppReference *fyne.App
 
 // Internal
 var leftSpacer *canvas.Rectangle
@@ -28,6 +32,12 @@ var left *fyne.Container
 var pitchLabel *canvas.Text
 var kofiUrl *url.URL
 var githubUrl *url.URL
+var ytWindowIsOpen = false
+
+func InitLeftSpacer() {
+	leftSpacer = canvas.NewRectangle(color.Transparent)
+	leftSpacer.SetMinSize(fyne.NewSize(20, 0))
+}
 
 func InitTestPitchButton(onClick func()) {
 	TestPitchButton = widget.NewButton("Test Voice", onClick)
@@ -35,6 +45,17 @@ func InitTestPitchButton(onClick func()) {
 
 func InitConnectButton(onClick func()) {
 	ConnectButton = widget.NewButton("Connect to Twitch", onClick)
+}
+
+func InitConnectYTButton() {
+	ConnectYTButton = widget.NewButton("Connect to Youtube", func() {
+		initYoutubeWindow(*AppReference)
+		if !ytWindowIsOpen {
+			YoutubeWindow.Show()
+			ytWindowIsOpen = true
+		}
+
+	})
 }
 
 func SetConnected() {
@@ -51,8 +72,6 @@ func initPitchSlider(pitchData binding.Float) {
 }
 
 func initLeftPitchLabel() {
-	leftSpacer = canvas.NewRectangle(color.Transparent)
-	leftSpacer.SetMinSize(fyne.NewSize(20, 0))
 	pitchLabel = canvas.NewText("Voice Pitch", theme.Color(theme.ColorNameForeground))
 	left = container.NewHBox(leftSpacer, pitchLabel)
 	PitchRow = container.New(
@@ -93,4 +112,30 @@ func InitUpdateButton() {
 		fyne.CurrentApp().OpenURL(githubUrl)
 	})
 
+}
+
+func initYoutubeWindow(app fyne.App) {
+	YoutubeWindow = app.NewWindow("Youtube Integration")
+	YoutubeWindow.SetOnClosed(func() {
+		ytWindowIsOpen = false
+	})
+
+	ytApiKeyInput := widget.NewEntry()
+	ytApiKeyInput.SetPlaceHolder("Enter your Youtube's API Key here")
+	ytApiKeyInput.Resize(fyne.NewSize(100, ytApiKeyInput.MinSize().Height))
+	ytApiKeySubmit := widget.NewButton("Submit Key", func() {
+		fmt.Println(ytApiKeyInput.Text)
+	})
+
+	form := widget.NewForm(
+		widget.NewFormItem("Youtube's API Key", ytApiKeyInput),
+	)
+
+	centeredButton := container.New(
+		layout.NewBorderLayout(nil, nil, layout.NewSpacer(), layout.NewSpacer()),
+		ytApiKeySubmit,
+	)
+
+	YoutubeWindow.SetContent(container.NewVBox(form, centeredButton))
+	YoutubeWindow.Resize(fyne.NewSize(400, 100))
 }

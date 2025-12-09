@@ -28,7 +28,7 @@ var updateTime = false
 
 func main() {
 	onlineVersion := github.GetLatestReleaseVersion()
-
+	common.InitLeftSpacer()
 	if onlineVersion != "" {
 		updateTime = needUpdate(version, onlineVersion)
 		if updateTime {
@@ -38,6 +38,8 @@ func main() {
 
 	a := app.New()
 	w := a.NewWindow("AC - Text to Speech for Twitch :) - " + version)
+	common.AppReference = &a
+	common.InitConnectYTButton()
 
 	go func() {
 		web.StartWebServer()
@@ -76,7 +78,7 @@ func main() {
 
 	content := container.NewVBox(
 		common.PitchRow,
-		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton)),
+		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton, common.ConnectYTButton)),
 	)
 	var footer *fyne.Container
 	if updateTime {
