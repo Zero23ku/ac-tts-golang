@@ -82,7 +82,13 @@ func SubscribeToChat(token string) {
 				message := strings.Split(splitted[1], ":")
 				if len(message) == 2 {
 					if Active {
-						reproductor.Reproduce(strip(message[1]), message[0])
+						chatMsg := message[1]
+						if common.IsTTSCommandActive() && strings.HasPrefix(chatMsg, common.GetTTSCommand()) {
+							reproductor.Reproduce(chatMsg, message[0])
+						} else if !common.IsTTSCommandActive() {
+							reproductor.Reproduce(chatMsg, message[0])
+						}
+
 					} else if strings.Compare(strings.TrimSpace(message[1]), "End of /NAMES list") == 0 && !Active {
 						Active = true
 					}
