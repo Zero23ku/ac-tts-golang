@@ -6,6 +6,13 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/widget"
+
+	"ac-tts/internal/reproductor"
 )
 
 var API_KEY = ""
@@ -59,9 +66,15 @@ type LivechatResponse struct {
 	PollingIntervalMillis int        `json:"pollingIntervalMillis"`
 }
 
+var ytWindowIsOpen = false
+
 const liveStreamingDetailsEndpoint = "https://www.googleapis.com/youtube/v3/videos"
 
 const liveStreamingGetChatMessages = "https://www.googleapis.com/youtube/v3/liveChat/messages"
+
+var YoutubeWindow fyne.Window
+var ConnectYTButton *widget.Button
+var AppReference *fyne.App
 
 func GetYTChannelInfo() {
 
@@ -86,15 +99,16 @@ func GetYTChannelInfo() {
 		log.Fatal(err)
 	}
 
-	//TODO: VALIDAR QUE Items no esté vacio
-	livestreamChatId = response.Items[0].LiveStreamingDetails.ActiveLiveChatId
+	if len(response.Items) > 0 {
+		livestreamChatId = response.Items[0].LiveStreamingDetails.ActiveLiveChatId
+	}
 
 	go func() {
 
 		client := &http.Client{}
 		pageToken := ""
 		chatUrl := liveStreamingGetChatMessages + "?liveChatId=" + livestreamChatId + "&part=snippet,authorDetails&maxResults=1000&key=" + API_KEY
-
+		fmt.Println("Pase por aqui")
 		for {
 
 			if pageToken != "" {
@@ -113,15 +127,23 @@ func GetYTChannelInfo() {
 				log.Fatal("Error sending request", err)
 			}
 			defer resp.Body.Close()
-
+			fmt.Println("AAAAAAAEEEAERAE")
 			var response LivechatResponse
+			jsonBytes, err := json.Marshal(response)
+			if err != nil {
+				fmt.Println("Error al convertir a JSON:", err)
+				return
+			}
+
+			jsonString := string(jsonBytes)
+			fmt.Println(jsonString)
 			if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 				log.Fatal(err)
 			}
-
+			fmt.Println(len(response.Items))
 			for i := 0; i < len(response.Items); i++ {
-				//TODO: Hacer sonar los mensajes
 				fmt.Println(response.Items[i].Snippet.TextMessageDetails.MessageText)
+				reproductor.Reproduce(response.Items[i].Snippet.TextMessageDetails.MessageText, "")
 			}
 
 			pageToken = response.NextpageToken
@@ -131,4 +153,53 @@ func GetYTChannelInfo() {
 
 	}()
 
+}
+
+func initYoutubeWindow(app fyne.App) {
+	YoutubeWindow = app.NewWindow("Youtube Integration")
+	YoutubeWindow.SetOnClosed(func() {
+		ytWindowIsOpen = false
+	})
+
+	ytApiKeyInput := widget.NewEntry()
+	ytApiKeyInput.SetPlaceHolder("Enter your Youtube's API Key here")
+	ytApiKeyInput.Resize(fyne.NewSize(100, ytApiKeyInput.MinSize().Height))
+
+	ytVideoInput := widget.NewEntry()
+	ytVideoInput.SetPlaceHolder("Enter Livestream's url: https://www.youtube.com/watch?v=your-id")
+	ytVideoInput.Resize(fyne.NewSize(100, ytVideoInput.MinSize().Height))
+
+	ytApiKeySubmit := widget.NewButton("Submit Key", func() {
+		API_KEY = ytApiKeyInput.Text
+		VIDEO_ID = ytVideoInput.Text
+		fmt.Println("TESTAAAA")
+		GetYTChannelInfo()
+	})
+
+	form := widget.NewForm(
+		widget.NewFormItem("Youtube's API Key", ytApiKeyInput),
+	)
+
+	formVide := widget.NewForm(
+		widget.NewFormItem("Youtube livestream URL", ytVideoInput),
+	)
+
+	centeredButton := container.New(
+		layout.NewBorderLayout(nil, nil, layout.NewSpacer(), layout.NewSpacer()),
+		ytApiKeySubmit,
+	)
+
+	YoutubeWindow.SetContent(container.NewVBox(form, formVide, centeredButton))
+	YoutubeWindow.Resize(fyne.NewSize(400, 100))
+}
+
+func InitConnectYTButton() {
+	ConnectYTButton = widget.NewButton("Connect to Youtube", func() {
+		initYoutubeWindow(*AppReference)
+		if !ytWindowIsOpen {
+			YoutubeWindow.Show()
+			ytWindowIsOpen = true
+		}
+
+	})
 }

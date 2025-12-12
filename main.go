@@ -21,6 +21,7 @@ import (
 	"ac-tts/internal/reproductor"
 	"ac-tts/internal/twitch"
 	"ac-tts/internal/web"
+	"ac-tts/internal/youtube"
 )
 
 var version = "v0.1.2"
@@ -38,8 +39,8 @@ func main() {
 
 	a := app.New()
 	w := a.NewWindow("AC - Text to Speech for Twitch :) - " + version)
-	common.AppReference = &a
-	common.InitConnectYTButton()
+	youtube.AppReference = &a
+	youtube.InitConnectYTButton()
 
 	go func() {
 		web.StartWebServer()
@@ -78,8 +79,19 @@ func main() {
 
 	content := container.NewVBox(
 		common.PitchRow,
-		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton, common.ConnectYTButton)),
+		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton)),
 	)
+
+	common.InitCommandCheck()
+	common.InitCommandInput()
+
+	commandContent := container.NewCenter(
+		container.NewHBox(
+			common.ActivateCommand,
+			common.InputCommand,
+		),
+	)
+
 	var footer *fyne.Container
 	if updateTime {
 		footer = container.NewVBox(common.UpdateButton, common.KofiButton)
@@ -92,7 +104,7 @@ func main() {
 		container.New(
 			layout.NewBorderLayout(nil, footer, nil, nil),
 			footer,
-			container.NewStack(content),
+			container.NewVBox(content, commandContent),
 		),
 	)
 	w.ShowAndRun()

@@ -1,7 +1,6 @@
 package common
 
 import (
-	"fmt"
 	"image/color"
 	"net/url"
 
@@ -14,7 +13,6 @@ import (
 	"fyne.io/fyne/v2/widget"
 
 	"ac-tts/internal/assets"
-	"ac-tts/internal/youtube"
 )
 
 var ConnectButton *widget.Button
@@ -23,9 +21,8 @@ var PitchRow *fyne.Container
 var KofiButton *widget.Button
 var TestPitchButton *widget.Button
 var UpdateButton *widget.Button
-var YoutubeWindow fyne.Window
-var ConnectYTButton *widget.Button
-var AppReference *fyne.App
+var ActivateCommand *widget.Check
+var InputCommand *widget.Entry
 
 // Internal
 var leftSpacer *canvas.Rectangle
@@ -33,7 +30,8 @@ var left *fyne.Container
 var pitchLabel *canvas.Text
 var kofiUrl *url.URL
 var githubUrl *url.URL
-var ytWindowIsOpen = false
+var isCommandActive = false
+var ttsCommand = "!tts" //valor default
 
 func InitLeftSpacer() {
 	leftSpacer = canvas.NewRectangle(color.Transparent)
@@ -46,17 +44,6 @@ func InitTestPitchButton(onClick func()) {
 
 func InitConnectButton(onClick func()) {
 	ConnectButton = widget.NewButton("Connect to Twitch", onClick)
-}
-
-func InitConnectYTButton() {
-	ConnectYTButton = widget.NewButton("Connect to Youtube", func() {
-		initYoutubeWindow(*AppReference)
-		if !ytWindowIsOpen {
-			YoutubeWindow.Show()
-			ytWindowIsOpen = true
-		}
-
-	})
 }
 
 func SetConnected() {
@@ -115,42 +102,21 @@ func InitUpdateButton() {
 
 }
 
-func initYoutubeWindow(app fyne.App) {
-	YoutubeWindow = app.NewWindow("Youtube Integration")
-	YoutubeWindow.SetOnClosed(func() {
-		ytWindowIsOpen = false
+func InitCommandCheck() {
+	ActivateCommand = widget.NewCheck("Use Command", func(value bool) {
+		isCommandActive = value
 	})
+}
 
-	ytApiKeyInput := widget.NewEntry()
-	ytApiKeyInput.SetPlaceHolder("Enter your Youtube's API Key here")
-	ytApiKeyInput.Resize(fyne.NewSize(100, ytApiKeyInput.MinSize().Height))
+func InitCommandInput() {
+	InputCommand = widget.NewEntry()
+	InputCommand.Text = ttsCommand
+}
 
-	ytVideoInput := widget.NewEntry()
-	ytVideoInput.SetPlaceHolder("Enter Livestream's url: https://www.youtube.com/watch?v=your-id")
-	ytVideoInput.Resize(fyne.NewSize(100, ytVideoInput.MinSize().Height))
+func GetTTSCommand() string {
+	return ttsCommand
+}
 
-	ytApiKeySubmit := widget.NewButton("Submit Key", func() {
-		//TODO: Guardarlos
-		fmt.Println(ytApiKeyInput.Text)
-		fmt.Println(ytVideoInput.Text)
-		youtube.API_KEY = ytApiKeyInput.Text
-		youtube.VIDEO_ID = ytVideoInput.Text
-		youtube.GetYTChannelInfo()
-	})
-
-	form := widget.NewForm(
-		widget.NewFormItem("Youtube's API Key", ytApiKeyInput),
-	)
-
-	formVide := widget.NewForm(
-		widget.NewFormItem("Youtube livestream URL", ytVideoInput),
-	)
-
-	centeredButton := container.New(
-		layout.NewBorderLayout(nil, nil, layout.NewSpacer(), layout.NewSpacer()),
-		ytApiKeySubmit,
-	)
-
-	YoutubeWindow.SetContent(container.NewVBox(form, formVide, centeredButton))
-	YoutubeWindow.Resize(fyne.NewSize(400, 100))
+func IsTTSCommandActive() bool {
+	return isCommandActive
 }
