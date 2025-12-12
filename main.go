@@ -24,7 +24,7 @@ import (
 	"ac-tts/internal/youtube"
 )
 
-var version = "v0.1.2"
+var version = "v0.2.0"
 var updateTime = false
 
 func main() {
