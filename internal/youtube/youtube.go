@@ -2,7 +2,6 @@ package youtube
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -108,7 +107,6 @@ func GetYTChannelInfo() {
 		client := &http.Client{}
 		pageToken := ""
 		chatUrl := liveStreamingGetChatMessages + "?liveChatId=" + livestreamChatId + "&part=snippet,authorDetails&maxResults=1000&key=" + API_KEY
-		fmt.Println("Pase por aqui")
 		for {
 
 			if pageToken != "" {
@@ -127,23 +125,14 @@ func GetYTChannelInfo() {
 				log.Fatal("Error sending request", err)
 			}
 			defer resp.Body.Close()
-			fmt.Println("AAAAAAAEEEAERAE")
 			var response LivechatResponse
-			jsonBytes, err := json.Marshal(response)
-			if err != nil {
-				fmt.Println("Error al convertir a JSON:", err)
-				return
-			}
 
-			jsonString := string(jsonBytes)
-			fmt.Println(jsonString)
 			if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 				log.Fatal(err)
 			}
-			fmt.Println(len(response.Items))
 			for i := 0; i < len(response.Items); i++ {
-				fmt.Println(response.Items[i].Snippet.TextMessageDetails.MessageText)
 				reproductor.Reproduce(response.Items[i].Snippet.TextMessageDetails.MessageText, "")
+				time.Sleep(time.Duration(600) * time.Millisecond)
 			}
 
 			pageToken = response.NextpageToken
@@ -172,7 +161,6 @@ func initYoutubeWindow(app fyne.App) {
 	ytApiKeySubmit := widget.NewButton("Submit Key", func() {
 		API_KEY = ytApiKeyInput.Text
 		VIDEO_ID = ytVideoInput.Text
-		fmt.Println("TESTAAAA")
 		GetYTChannelInfo()
 	})
 

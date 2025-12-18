@@ -24,7 +24,7 @@ import (
 	"ac-tts/internal/youtube"
 )
 
-var version = "v0.2.0"
+var version = "v0.3.0"
 var updateTime = false
 
 func main() {
@@ -79,7 +79,7 @@ func main() {
 
 	content := container.NewVBox(
 		common.PitchRow,
-		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton)),
+		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton, youtube.ConnectYTButton)),
 	)
 
 	common.InitCommandCheck()

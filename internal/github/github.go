@@ -33,7 +33,7 @@ func GetLatestReleaseVersion() string {
 
 	if err := json.Unmarshal(body, &response); err != nil {
 		logging.CreateLog("github - couldn't transform response", err)
-		log.Fatal(err)
+		return ""
 	}
 
 	if len(response) > 0 {
