@@ -2,8 +2,10 @@ package youtube
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -11,6 +13,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 
+	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
 )
 
@@ -132,7 +135,7 @@ func GetYTChannelInfo() {
 			}
 			for i := 0; i < len(response.Items); i++ {
 				reproductor.Reproduce(response.Items[i].Snippet.TextMessageDetails.MessageText, "")
-				time.Sleep(time.Duration(600) * time.Millisecond)
+				time.Sleep(time.Duration(1200) * time.Millisecond)
 			}
 
 			pageToken = response.NextpageToken
@@ -145,7 +148,7 @@ func GetYTChannelInfo() {
 }
 
 func initYoutubeWindow(app fyne.App) {
-	YoutubeWindow = app.NewWindow("Youtube Integration")
+	YoutubeWindow = app.NewWindow("Youtube Integration (Alpha)")
 	YoutubeWindow.SetOnClosed(func() {
 		ytWindowIsOpen = false
 	})
@@ -158,10 +161,16 @@ func initYoutubeWindow(app fyne.App) {
 	ytVideoInput.SetPlaceHolder("Enter Livestream's url: https://www.youtube.com/watch?v=your-id")
 	ytVideoInput.Resize(fyne.NewSize(100, ytVideoInput.MinSize().Height))
 
-	ytApiKeySubmit := widget.NewButton("Submit Key", func() {
+	ytApiKeySubmit := widget.NewButton("Connect", func() {
 		API_KEY = ytApiKeyInput.Text
-		VIDEO_ID = ytVideoInput.Text
+
+		ytID, err := getYTID(ytVideoInput.Text)
+		if err != nil && ytID == "" {
+			logging.CreateLog("Youtube - ", err)
+		}
+		VIDEO_ID = ytID
 		GetYTChannelInfo()
+		YoutubeWindow.Close()
 	})
 
 	form := widget.NewForm(
@@ -182,7 +191,7 @@ func initYoutubeWindow(app fyne.App) {
 }
 
 func InitConnectYTButton() {
-	ConnectYTButton = widget.NewButton("Connect to Youtube", func() {
+	ConnectYTButton = widget.NewButton("Connect to Youtube (Alpha)", func() {
 		initYoutubeWindow(*AppReference)
 		if !ytWindowIsOpen {
 			YoutubeWindow.Show()
@@ -190,4 +199,19 @@ func InitConnectYTButton() {
 		}
 
 	})
+}
+
+func getYTID(ytUrl string) (string, error) {
+	parsedUrl, err := url.Parse(ytUrl)
+	if err != nil {
+		return ytUrl, err
+	}
+
+	qParams := parsedUrl.Query()
+	id := qParams.Get("v")
+	if id == "" {
+		return "", fmt.Errorf("No video ID")
+	}
+
+	return id, nil
 }
