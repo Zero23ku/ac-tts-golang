@@ -19,6 +19,7 @@ import (
 	"ac-tts/internal/github"
 	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
+	"ac-tts/internal/tiktok"
 	"ac-tts/internal/twitch"
 	"ac-tts/internal/web"
 	"ac-tts/internal/youtube"
@@ -36,6 +37,8 @@ func main() {
 			common.InitUpdateButton()
 		}
 	}
+
+	tiktok.InitTiktok("sandrasalazarca")
 
 	a := app.New()
 	w := a.NewWindow("AC - Text to Speech for Twitch :) - " + version)

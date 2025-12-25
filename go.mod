@@ -10,7 +10,9 @@ require (
 require (
 	fyne.io/systray v1.11.1-0.20250603113521-ca66a66d8b58 // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect
+	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/erni27/imcache v1.2.1 // indirect
 	github.com/fredbi/uri v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fyne-io/gl-js v0.2.0 // indirect
@@ -21,6 +23,9 @@ require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240506104042-037f3cc74f2a // indirect
 	github.com/go-text/render v0.2.0 // indirect
 	github.com/go-text/typesetting v0.2.1 // indirect
+	github.com/gobwas/httphead v0.1.0 // indirect
+	github.com/gobwas/pool v0.2.1 // indirect
+	github.com/gobwas/ws v1.1.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/hack-pad/go-indexeddb v0.3.2 // indirect
 	github.com/hack-pad/safejs v0.1.0 // indirect
@@ -35,13 +40,16 @@ require (
 	github.com/rymdport/portal v0.4.2 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
+	github.com/steampoweredtaco/gotiktoklive v0.0.4 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/yuin/goldmark v1.7.8 // indirect
+	go.uber.org/ratelimit v0.3.1 // indirect
 	golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8 // indirect
 	golang.org/x/image v0.24.0 // indirect
 	golang.org/x/mobile v0.0.0-20231127183840-76ac6878050a // indirect
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
