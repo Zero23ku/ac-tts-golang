@@ -1,11 +1,13 @@
 package youtube
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -13,6 +15,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 
+	"ac-tts/internal/common"
 	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
 )
@@ -77,8 +80,9 @@ const liveStreamingGetChatMessages = "https://www.googleapis.com/youtube/v3/live
 var YoutubeWindow fyne.Window
 var ConnectYTButton *widget.Button
 var AppReference *fyne.App
+var CTX context.Context
 
-func GetYTChannelInfo() {
+func GetYTChannelInfo(ctx context.Context) {
 
 	client := &http.Client{}
 	url := liveStreamingDetailsEndpoint + "?part=liveStreamingDetails,snippet&id=" + VIDEO_ID + "&key=" + API_KEY
@@ -112,35 +116,47 @@ func GetYTChannelInfo() {
 		chatUrl := liveStreamingGetChatMessages + "?liveChatId=" + livestreamChatId + "&part=snippet,authorDetails&maxResults=1000&key=" + API_KEY
 		for {
 
-			if pageToken != "" {
-				chatUrl = chatUrl + "&pageToken=" + pageToken
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				if pageToken != "" {
+					chatUrl = chatUrl + "&pageToken=" + pageToken
+				}
+
+				req, err := http.NewRequest("GET", chatUrl, nil)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				resp, err := client.Do(req)
+
+				if err != nil {
+					log.Fatal("Error sending request", err)
+				}
+				defer resp.Body.Close()
+				var response LivechatResponse
+
+				if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+					log.Fatal(err)
+				}
+				for i := 0; i < len(response.Items); i++ {
+					ytMsg := response.Items[i].Snippet.TextMessageDetails.MessageText
+					if common.IsTTSCommandActive() && strings.HasPrefix(ytMsg, common.GetTTSCommand()) {
+						reproductor.Reproduce(ytMsg, "")
+					} else if !common.IsTTSCommandActive() {
+						reproductor.Reproduce(ytMsg, "")
+					}
+
+					time.Sleep(time.Duration(1200) * time.Millisecond)
+				}
+
+				pageToken = response.NextpageToken
+				interval := response.PollingIntervalMillis
+				time.Sleep(time.Duration(interval) * time.Millisecond)
 			}
 
-			req, err := http.NewRequest("GET", chatUrl, nil)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			resp, err := client.Do(req)
-
-			if err != nil {
-				log.Fatal("Error sending request", err)
-			}
-			defer resp.Body.Close()
-			var response LivechatResponse
-
-			if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-				log.Fatal(err)
-			}
-			for i := 0; i < len(response.Items); i++ {
-				reproductor.Reproduce(response.Items[i].Snippet.TextMessageDetails.MessageText, "")
-				time.Sleep(time.Duration(1200) * time.Millisecond)
-			}
-
-			pageToken = response.NextpageToken
-			interval := response.PollingIntervalMillis
-			time.Sleep(time.Duration(interval) * time.Millisecond)
 		}
 
 	}()
@@ -169,7 +185,7 @@ func initYoutubeWindow(app fyne.App) {
 			logging.CreateLog("Youtube - ", err)
 		}
 		VIDEO_ID = ytID
-		GetYTChannelInfo()
+		GetYTChannelInfo(CTX)
 		YoutubeWindow.Close()
 	})
 
