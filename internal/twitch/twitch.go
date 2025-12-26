@@ -2,6 +2,7 @@ package twitch
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -29,6 +30,8 @@ const TWITCH_BROADCASTER_ID = "https://api.twitch.tv/helix/users"
 const CLIENT_ID = "4u4v1h8d2yfvftoqtstu0pley1pooo"
 
 const IRC_TWITCH_SERVER = "irc.chat.twitch.tv:6667"
+
+var CTX context.Context
 
 func GetAuthorization() {
 	var err error
@@ -69,32 +72,39 @@ func SubscribeToChat(token string) {
 	reader := bufio.NewReader(conn)
 	go func() {
 		for {
-			line, err := reader.ReadString('\n')
-			if strings.HasPrefix(line, "PING") {
-				fmt.Fprintf(conn, "PONG :tmi.twitch.tv\r\n")
-			}
-			if err != nil {
-				logging.CreateLog("twitch - couldn't get new message in chat", err)
-				log.Fatal(err)
-			}
-			splitted := strings.Split(line, "#")
-			if len(splitted) == 2 {
-				message := strings.Split(splitted[1], ":")
-				if len(message) == 2 {
-					if Active {
-						chatMsg := message[1]
-						if common.IsTTSCommandActive() && strings.HasPrefix(chatMsg, common.GetTTSCommand()) {
-							reproductor.Reproduce(chatMsg, message[0])
-						} else if !common.IsTTSCommandActive() {
-							reproductor.Reproduce(chatMsg, message[0])
+
+			select {
+			case <-CTX.Done():
+				return
+			default:
+				line, err := reader.ReadString('\n')
+				if strings.HasPrefix(line, "PING") {
+					fmt.Fprintf(conn, "PONG :tmi.twitch.tv\r\n")
+				}
+				if err != nil {
+					logging.CreateLog("twitch - couldn't get new message in chat", err)
+					log.Fatal(err)
+				}
+				splitted := strings.Split(line, "#")
+				if len(splitted) == 2 {
+					message := strings.Split(splitted[1], ":")
+					if len(message) == 2 {
+						if Active {
+							chatMsg := message[1]
+							if common.IsTTSCommandActive() && strings.HasPrefix(chatMsg, common.GetTTSCommand()) {
+								reproductor.Reproduce(chatMsg, message[0])
+							} else if !common.IsTTSCommandActive() {
+								reproductor.Reproduce(chatMsg, message[0])
+							}
+
+						} else if strings.Compare(strings.TrimSpace(message[1]), "End of /NAMES list") == 0 && !Active {
+							Active = true
 						}
 
-					} else if strings.Compare(strings.TrimSpace(message[1]), "End of /NAMES list") == 0 && !Active {
-						Active = true
 					}
-
 				}
 			}
+
 		}
 	}()
 

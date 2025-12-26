@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 
@@ -29,6 +31,8 @@ var version = "v0.3.0"
 var updateTime = false
 
 func main() {
+
+	ctx, cancel := context.WithCancel(context.Background())
 	onlineVersion := github.GetLatestReleaseVersion()
 	common.InitLeftSpacer()
 	if onlineVersion != "" {
@@ -38,12 +42,20 @@ func main() {
 		}
 	}
 
-	tiktok.InitTiktok("sandrasalazarca")
-
 	a := app.New()
 	w := a.NewWindow("AC - Text to Speech for Twitch :) - " + version)
+	w.SetOnClosed(func() {
+		cancel()
+		os.Exit(0)
+	})
 	youtube.AppReference = &a
+	youtube.CTX = ctx
 	youtube.InitConnectYTButton()
+
+	tiktok.CTX = ctx
+	tiktok.AppReference = &a
+	tiktok.InitConnectTiktokButton()
+	twitch.CTX = ctx
 
 	go func() {
 		web.StartWebServer()
@@ -82,7 +94,7 @@ func main() {
 
 	content := container.NewVBox(
 		common.PitchRow,
-		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton, youtube.ConnectYTButton)),
+		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton, youtube.ConnectYTButton, tiktok.ConnectTiktokButton)),
 	)
 
 	common.InitCommandCheck()
