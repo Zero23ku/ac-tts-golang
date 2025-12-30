@@ -6,7 +6,7 @@ This is the main app's window. Here you can connect to different stream services
 
 To change the pitch, you just need to move the slider, then click "Test Voice" to hear how it will sound.
 
-![AC TTS](./img/app.png)
+![AC TTS](./img/mainw.png)
 
 ## Disclaimer
 
