@@ -27,7 +27,7 @@ import (
 	"ac-tts/internal/youtube"
 )
 
-var version = "v0.4.0"
+var version = "v0.4.1"
 var updateTime = false
 
 func main() {
@@ -99,6 +99,7 @@ func main() {
 
 	common.InitCommandCheck()
 	common.InitCommandInput()
+	common.InitDocsButton()
 
 	commandContent := container.NewCenter(
 		container.NewHBox(
@@ -111,7 +112,7 @@ func main() {
 	if updateTime {
 		footer = container.NewVBox(common.UpdateButton, common.KofiButton)
 	} else {
-		footer = container.NewVBox(common.KofiButton)
+		footer = container.NewVBox(common.DocsButton, common.KofiButton)
 	}
 
 	w.SetIcon(icon)

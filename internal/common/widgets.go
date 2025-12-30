@@ -23,12 +23,14 @@ var TestPitchButton *widget.Button
 var UpdateButton *widget.Button
 var ActivateCommand *widget.Check
 var InputCommand *widget.Entry
+var DocsButton *widget.Button
 
 // Internal
 var leftSpacer *canvas.Rectangle
 var left *fyne.Container
 var pitchLabel *canvas.Text
 var kofiUrl *url.URL
+var docsUrl *url.URL
 var githubUrl *url.URL
 var isCommandActive = false
 var ttsCommand = "!tts" //valor default
@@ -85,6 +87,19 @@ func InitKofiButton() {
 
 	KofiButton = widget.NewButtonWithIcon("Support me!", res, func() {
 		fyne.CurrentApp().OpenURL(kofiUrl)
+	})
+}
+
+// https://github.com/Zero23ku/ac-tts-golang/blob/main/docs/docs.md
+func InitDocsButton() {
+	docsUrl = &url.URL{
+		Scheme: "https",
+		Host:   "github.com",
+		Path:   "Zero23ku/ac-tts-golang/blob/main/docs/docs.md",
+	}
+
+	DocsButton = widget.NewButton("How to use", func() {
+		fyne.CurrentApp().OpenURL(docsUrl)
 	})
 }
 
