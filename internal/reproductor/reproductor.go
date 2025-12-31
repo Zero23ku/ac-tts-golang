@@ -11,6 +11,7 @@ import (
 	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
+	"github.com/mozillazg/go-unidecode"
 
 	"ac-tts/internal/animalese"
 	"ac-tts/internal/assets"
@@ -31,6 +32,7 @@ func Reproduce(text string, user string) {
 		log.Fatal(err)
 		panic(err)
 	}
+	text = removeAccents(text)
 	wave := ani.AnimaleseFunc(text, true, common.Pitch)
 
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
@@ -78,4 +80,8 @@ func InitSpeaker(format beep.Format) {
 	once.Do(func() {
 		speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
 	})
+}
+
+func removeAccents(text string) string {
+	return unidecode.Unidecode(text) // One-liner!
 }
