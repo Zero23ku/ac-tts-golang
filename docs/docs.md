@@ -44,8 +44,8 @@ To connect to your Youtube's livestream chat, you need to enter your livestream 
 
 Due to Youtube's Api key limits and quota, for now, the best way to ensure this works for everyone is that **every user need to bring they own API Key**
 
-To leanr how to obtain your own Youtube's API key you can [follow official guide](https://developers.google.com/youtube/registering_an_application) or [check this video](https://www.youtube.com/watch?v=EPeDTRNKAVo)
+To learn how to obtain your own Youtube's API key you can [follow official guide](https://developers.google.com/youtube/registering_an_application) or [check this video](https://www.youtube.com/watch?v=EPeDTRNKAVo)
 
-**Please ve careful, don't share your API Key, treat it as any other of your passwords, this app doesn't save your API Key so you will need to use it every time you want to connect it to your chat**
+**Please be careful, don't share your API Key, treat it as any other of your passwords, this app doesn't save your API Key so you will need to use it every time you want to connect it to your chat**
 
 ![Youtube's window](./img/youtube-window.png)
