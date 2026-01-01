@@ -3,7 +3,6 @@ package stt
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"image/color"
 	"os"
 	"regexp"
@@ -101,6 +100,8 @@ func initSTTWindow(app fyne.App) {
 			STTErrorWindow.Show()
 			return
 		}
+		initSttButton.SetText("Reading...")
+		initSttButton.Disable()
 		go func(ctx context.Context) {
 			reader := bufio.NewReader(file)
 			timeRegex := regexp.MustCompile(`\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}`)
@@ -117,7 +118,6 @@ func initSTTWindow(app fyne.App) {
 					}
 
 					line = strings.TrimSpace(line)
-					fmt.Println(line)
 					if line == "" {
 						continue
 					}
