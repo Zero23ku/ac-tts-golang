@@ -52,7 +52,9 @@ To learn how to obtain your own Youtube's API key you can [follow official guide
 
 ## Read text offline
 
-This let you read any text you put in the text area without the need to connect to any platform
+This let you read any text you put in the text area without the need to connect to any platform.
+
+Also, you can save the audio clips as wav files, first you need to enter a filename, and then select a folder in which the file will be saved
 
 ![Read text offline's window](./img/read-offline.png)
 
