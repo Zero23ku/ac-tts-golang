@@ -22,6 +22,7 @@ import (
 	"ac-tts/internal/local"
 	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
+	"ac-tts/internal/stt"
 	"ac-tts/internal/tiktok"
 	"ac-tts/internal/twitch"
 	"ac-tts/internal/web"
@@ -112,6 +113,9 @@ func main() {
 	local.AppReference = &a
 	local.InitLocalButton()
 
+	stt.AppReference = &a
+	stt.InitSTTButton()
+
 	var footer *fyne.Container
 	if updateTime {
 		footer = container.NewVBox(common.UpdateButton, common.KofiButton)
@@ -124,7 +128,7 @@ func main() {
 		container.New(
 			layout.NewBorderLayout(nil, footer, nil, nil),
 			footer,
-			container.NewVBox(content, commandContent, local.LocalButton),
+			container.NewVBox(content, commandContent, local.LocalButton, stt.STTButton),
 		),
 	)
 	w.ShowAndRun()

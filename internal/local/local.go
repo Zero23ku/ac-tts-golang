@@ -52,13 +52,13 @@ func initLocalWindow(app fyne.App) {
 		reproductor.Reproduce(textArea.Text, "")
 	})
 
-	constrols := container.NewVBox(
+	controls := container.NewVBox(
 		pitchRow,
 		readButton,
 	)
 
 	LocalContainer = container.NewBorder(
-		constrols,
+		controls,
 		nil, nil, nil,
 		textArea,
 	)
