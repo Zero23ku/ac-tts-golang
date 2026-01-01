@@ -49,3 +49,24 @@ To learn how to obtain your own Youtube's API key you can [follow official guide
 **Please be careful, don't share your API Key, treat it as any other of your passwords, this app doesn't save your API Key so you will need to use it every time you want to connect it to your chat**
 
 ![Youtube's window](./img/youtube-window.png)
+
+## Read text offline
+
+This let you read any text you put in the text area without the need to connect to any platform
+
+![Read text offline's window](./img/read-offline.png)
+
+## Read from TTS
+
+This option exists if you want to use this TTS alongside a STT tool (Speech-to-text). This will work with any STT tool that output a plain txt file or a standard .str file
+
+First, you need to select file in which the STT tool will output the text, and then click "Read STT file" Button.
+
+![Read from STT's window](./img/stt-window.png)
+
+This option was developed and tested using [Closed Captioning OBS Plugin](https://github.com/ratwithacompiler/OBS-captions-plugin)
+
+
+As long as you have **Write instantly** option selected and the file format is **Text only** or **SubRip subtitle .str**
+
+![CCOBS config](./img/stt-config.png)
