@@ -2,6 +2,8 @@ package local
 
 import (
 	"image/color"
+	"strings"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -49,7 +51,18 @@ func initLocalWindow(app fyne.App) {
 	textArea.SetPlaceHolder("Enter text you want to be read")
 
 	readButton = widget.NewButton("Read", func() {
-		reproductor.Reproduce(textArea.Text, "")
+		lines := strings.Split(textArea.Text, "\n")
+
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				time.Sleep(500 * time.Millisecond)
+				continue
+			}
+			reproductor.Reproduce(line, "")
+
+		}
+
 	})
 
 	controls := container.NewVBox(
