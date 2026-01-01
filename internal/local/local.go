@@ -2,6 +2,7 @@ package local
 
 import (
 	"image/color"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
@@ -20,12 +22,20 @@ import (
 var pitchSlider *widget.Slider
 var readButton *widget.Button
 var textArea *widget.Entry
+var saveButton *widget.Button
+var filenameInput *widget.Entry
+var folderButton *widget.Button
+var saveDir string
 
 var LocalContainer *fyne.Container
 var LocalWindow fyne.Window
 var LocalWindowIsOpen = false
 var LocalButton *widget.Button
 var AppReference *fyne.App
+var LocalErrorWindow fyne.Window
+var LocalSuccessWindow fyne.Window
+
+const format = ".wav"
 
 func initLocalWindow(app fyne.App) {
 	pitchData := binding.BindFloat(&common.Pitch)
@@ -50,6 +60,54 @@ func initLocalWindow(app fyne.App) {
 	textArea = widget.NewMultiLineEntry()
 	textArea.SetPlaceHolder("Enter text you want to be read")
 
+	filenameInput = widget.NewEntry()
+	filenameInput.SetPlaceHolder("Enter file name")
+
+	folderButton = widget.NewButton("Select Folder", func() {
+		dialog.NewFolderOpen(func(list fyne.ListableURI, err error) {
+			if err != nil {
+				initErrorWindow(app, "Error selecting folder: "+err.Error())
+				LocalErrorWindow.Show()
+				return
+			}
+			if list == nil {
+				folderButton.SetText("Select Folder")
+				saveDir = ""
+				return
+			}
+			saveDir = list.Path()
+			folderButton.SetText("Folder: " + saveDir)
+		}, LocalWindow).Show()
+	})
+
+	saveButton = widget.NewButton("Save audio", func() {
+		if filenameInput.Text == "" {
+			initErrorWindow(app, "You must enter a filename")
+			LocalErrorWindow.Show()
+			return
+		}
+
+		if saveDir == "" {
+			initErrorWindow(app, "You must select a folder")
+			LocalErrorWindow.Show()
+			return
+		}
+
+		lines := strings.Split(textArea.Text, "\n")
+		finalLines := ""
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			finalLines = finalLines + " " + line
+		}
+		path := filepath.Join(saveDir, filenameInput.Text+format)
+		reproductor.SaveAsWav(finalLines, path)
+		initSuccessWindow(app, "Audio clip saved!")
+		LocalSuccessWindow.Show()
+	})
+
 	readButton = widget.NewButton("Read", func() {
 		lines := strings.Split(textArea.Text, "\n")
 
@@ -67,7 +125,12 @@ func initLocalWindow(app fyne.App) {
 
 	controls := container.NewVBox(
 		pitchRow,
-		readButton,
+		container.NewHBox(
+			readButton,
+			container.NewGridWrap(fyne.NewSize(300, filenameInput.MinSize().Height), filenameInput),
+			folderButton,
+			saveButton,
+		),
 	)
 
 	LocalContainer = container.NewBorder(
@@ -89,4 +152,15 @@ func InitLocalButton() {
 		}
 	})
 
+}
+
+func initErrorWindow(app fyne.App, msg string) {
+	LocalErrorWindow = app.NewWindow("Error!")
+	LocalErrorWindow.SetContent(widget.NewLabel(msg))
+
+}
+
+func initSuccessWindow(app fyne.App, msg string) {
+	LocalSuccessWindow = app.NewWindow("Success!")
+	LocalSuccessWindow.SetContent(widget.NewLabel(msg))
 }

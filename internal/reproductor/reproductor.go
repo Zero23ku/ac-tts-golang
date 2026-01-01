@@ -2,8 +2,10 @@ package reproductor
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"sync"
 	"time"
 
@@ -21,6 +23,38 @@ import (
 
 var UserMap = make(map[string]float64)
 var once sync.Once
+
+func SaveAsWav(text string, fileName string) {
+	ani, err := animalese.NewAnimaleseFromBytes(assets.AnimaleseWav, func() {
+
+	})
+
+	if err != nil {
+		logging.CreateLog("reproductor - initializing animaleses", err)
+		log.Fatal(err)
+		panic(err)
+	}
+	text = removeAccents(text)
+	wave := ani.AnimaleseFunc(text, true, common.Pitch)
+
+	streamer, format, err := wav.Decode(bytes.NewReader(wave))
+	if err != nil {
+		logging.CreateLog("reproductor - creating wav", err)
+		log.Fatal(err)
+	}
+	defer streamer.Close()
+
+	file, err := os.Create(fileName)
+	if err != nil {
+		logging.CreateLog("reproductor - error creating new file", err)
+		log.Fatal(err)
+	}
+	defer file.Close()
+	fmt.Println("Guardando archivo: " + fileName)
+	if err := wav.Encode(file, streamer, format); err != nil {
+		log.Fatal(err)
+	}
+}
 
 func Reproduce(text string, user string) {
 	ani, err := animalese.NewAnimaleseFromBytes(assets.AnimaleseWav, func() {
