@@ -14,6 +14,7 @@ require (
 	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dhkimxx/GoChzzkChatCrawler v0.0.0-20250212124928-852ff59b9c6e // indirect
 	github.com/erni27/imcache v1.2.1 // indirect
 	github.com/fredbi/uri v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
@@ -29,6 +30,7 @@ require (
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.1.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hack-pad/go-indexeddb v0.3.2 // indirect
 	github.com/hack-pad/safejs v0.1.0 // indirect
 	github.com/hajimehoshi/oto v0.7.1 // indirect
