@@ -17,6 +17,7 @@ import (
 
 	"ac-tts/internal/animalese"
 	"ac-tts/internal/assets"
+	"ac-tts/internal/chzzk"
 	"ac-tts/internal/common"
 	"ac-tts/internal/github"
 	"ac-tts/internal/local"
@@ -33,7 +34,6 @@ var version = "v0.5.3"
 var updateTime = false
 
 func main() {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	onlineVersion := github.GetLatestReleaseVersion()
 	common.InitLeftSpacer()
@@ -58,6 +58,10 @@ func main() {
 	tiktok.AppReference = &a
 	tiktok.InitConnectTiktokButton()
 	twitch.CTX = ctx
+
+	chzzk.CTX = ctx
+	chzzk.AppReference = &a
+	chzzk.InitConnectChzzkButton()
 
 	go func() {
 		web.StartWebServer()
@@ -96,7 +100,7 @@ func main() {
 
 	content := container.NewVBox(
 		common.PitchRow,
-		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton, youtube.ConnectYTButton, tiktok.ConnectTiktokButton)),
+		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton, youtube.ConnectYTButton, tiktok.ConnectTiktokButton, chzzk.ConnectChzzkButton)),
 	)
 
 	common.InitCommandCheck()

@@ -72,3 +72,13 @@ This option was developed and tested using [Closed Captioning OBS Plugin](https:
 As long as you have **Write instantly** option selected and the file format is **Text only** or **SubRip subtitle .str**
 
 ![CCOBS config](./img/stt-config.png)
+
+## Connect to chzzk
+
+To connect the TTS to a chzzk livestream, you must be streaming first, and then inser the livestream id.
+
+![chzzk window](./img/chzzk-window.png)
+
+To obtain your livestream id, check the url of your livestream, the last part is your id
+
+![chzzk live id](./img/chzzk-liveid.png)
