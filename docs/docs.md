@@ -90,3 +90,7 @@ To connect the TTS to a chzzk livestream, you must be streaming first, and then 
 To obtain your livestream id, check the url of your livestream, the last part is your id
 
 ![chzzk live id](./img/chzzk-liveid.png)
+
+## Random pitch per user
+
+As the name says, each user get a random Pitch and it stays the same until the TTS is restarted

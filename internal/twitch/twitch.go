@@ -120,9 +120,17 @@ func SubscribeToChat(token string) {
 							if Active {
 								chatMsg := message[1]
 								if common.IsTTSCommandActive() && strings.HasPrefix(chatMsg, common.GetTTSCommand()) {
-									reproductor.Reproduce(chatMsg, message[0])
+									if common.IsPitchRandom {
+										reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+									} else {
+										reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+									}
 								} else if !common.IsTTSCommandActive() {
-									reproductor.Reproduce(chatMsg, message[0])
+									if common.IsPitchRandom {
+										reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+									} else {
+										reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+									}
 								}
 
 							} else if strings.Compare(strings.TrimSpace(message[1]), "End of /NAMES list") == 0 && !Active {
@@ -235,7 +243,11 @@ func subscribeToEvent(accessToken string, userID string) {
 			panic(err)
 		}
 		if common.TwitchRedeemName.Text == r.Reward.Title {
-			reproductor.Reproduce(r.UserInput, "")
+			if common.IsPitchRandom {
+				reproductor.Reproduce(r.UserInput, r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
+			} else {
+				reproductor.Reproduce(r.UserInput, r.UserName, common.Pitch, common.IsPitchRandom)
+			}
 		}
 	})
 

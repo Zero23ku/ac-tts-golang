@@ -24,6 +24,7 @@ var TestPitchButton *widget.Button
 var UpdateButton *widget.Button
 var ActivateCommand *widget.Check
 var InputCommand *widget.Entry
+var RandomPitch *widget.Check
 var DocsButton *widget.Button
 var AppReference *fyne.App
 
@@ -219,6 +220,12 @@ func InitCommandCheck() {
 func InitCommandInput() {
 	InputCommand = widget.NewEntry()
 	InputCommand.Text = ttsCommand
+}
+
+func InitRandomPitch() {
+	RandomPitch = widget.NewCheck("Random Pitch per user", func(value bool) {
+		IsPitchRandom = value
+	})
 }
 
 func GetTTSCommand() string {

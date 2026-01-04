@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/dhkimxx/GoChzzkChatCrawler/crawler"
 
+	"ac-tts/internal/common"
 	"ac-tts/internal/reproductor"
 )
 
@@ -26,7 +27,11 @@ func connectToChzzk(liveid string, ctx context.Context) {
 
 	// Create a new crawler client with callback handler
 	crawlerClient := crawler.NewCrawlerClient(liveid, 1, func(msg crawler.ChzzkChatMessage) {
-		reproductor.Reproduce(msg.Content, "")
+		if common.IsPitchRandom {
+			reproductor.Reproduce(msg.Content, msg.Nickname, common.GetRandomPitch(), common.IsPitchRandom)
+		} else {
+			reproductor.Reproduce(msg.Content, msg.Nickname, common.Pitch, common.IsPitchRandom)
+		}
 		time.Sleep(500 * time.Millisecond)
 	})
 
