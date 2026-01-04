@@ -13,6 +13,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 
 	"ac-tts/internal/assets"
+	"ac-tts/internal/config"
 )
 
 var TwitchConnectButton *widget.Button
@@ -77,7 +78,11 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 	radio.SetSelected("Read all messages in chat")
 
 	ConnectToTwitch = widget.NewButton("Connect to Twitch", func() {
-		//TODO: Cambiar lógica dependiendo de si está activa o no la opción de canjes
+		redeemText := ""
+		if IsRedeemOptionActiva {
+			redeemText = TwitchRedeemName.Text
+		}
+		config.SaveConfig(!IsRedeemOptionActiva, redeemText)
 		if IsRedeemOptionActiva && TwitchRedeemName.Text == "" {
 			initTwitchErrorWindow(app, "You must enter a Redeem's name")
 			TwitchErrorWindow.Show()
@@ -101,6 +106,18 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 	)
 
 	TwitchConfWindow.Resize(fyne.NewSize(400, 100))
+	configs, err := config.ReadConfig()
+	if err != nil {
+		initTwitchErrorWindow(app, "Error reading tts_config.json")
+		TwitchErrorWindow.Show()
+	} else {
+		if configs.TwitchConfig.ReadAllChat {
+			radio.SetSelected("Read all messages in chat")
+		} else {
+			radio.SetSelected("Use channel points")
+			TwitchRedeemName.SetText(configs.TwitchConfig.RedeemName)
+		}
+	}
 
 }
 
