@@ -90,8 +90,8 @@ func main() {
 	common.InitTestPitchButton(func() {
 		reproductor.Reproduce("Hola esto es una prueba de pitch :)", "")
 	})
-
-	common.InitConnectButton(func() { twitch.GetAuthorization() })
+	common.AppReference = &a
+	common.InitTwitchConnectButton(func() { twitch.GetAuthorization() })
 	w.Resize(fyne.NewSize(400, 200))
 
 	icon := fyne.NewStaticResource("icon.png", assets.Icon)
@@ -100,7 +100,7 @@ func main() {
 
 	content := container.NewVBox(
 		common.PitchRow,
-		container.NewCenter(container.NewHBox(common.TestPitchButton, common.ConnectButton, youtube.ConnectYTButton, tiktok.ConnectTiktokButton, chzzk.ConnectChzzkButton)),
+		container.NewCenter(container.NewHBox(common.TestPitchButton, common.TwitchConnectButton, youtube.ConnectYTButton, tiktok.ConnectTiktokButton, chzzk.ConnectChzzkButton)),
 	)
 
 	common.InitCommandCheck()
