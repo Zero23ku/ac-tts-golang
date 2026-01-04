@@ -18,7 +18,15 @@ If you want to support me, you can do it by sending me a Ko-fi
 
 ## Connect to Twitch
 
-When you click "Connecto to Twitch", the following window will appears in your browser, asking you to give permission to read and write messages in your chat (At the moment, this app don't send any message to chat, it may change in the future if there is a interested feature to implement, or it will be removed in the future)
+When you click "Connect to Twitch", a new windows with few options will appears
+
+![Twitch's options](./img/twitch-options.png)
+
+- Read all messages in chat will do exactly that. The TTS will make sounds with everyone chat message
+
+- Use channel points will read the message writen in a given custom Redeem **You must put the exact name, caps and everything**
+
+When you finnaly click "Connecto to Twitch" again, the following window will appears in your browser, asking you to give permission to read and write messages in your chat (At the moment, this app don't send any message to chat, it may change in the future if there is a interested feature to implement, or it will be removed in the future)
 
 ![Twitch's window](./img/twitch-access.png)
 
