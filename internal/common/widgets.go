@@ -63,15 +63,18 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 		widget.NewFormItem("Twitch Redeem's name", TwitchRedeemName),
 	)
 
-	TwitchActiveRedeemOption = widget.NewCheck("Activate via Redeems", func(value bool) {
-		IsRedeemOptionActiva = value
-		if value {
-			TwitchRedeemName.Enable()
-		} else {
+	radio := widget.NewRadioGroup([]string{"Read all messages in chat", "Use channel points"}, func(value string) {
+		if value == "Read all messages in chat" {
+			IsRedeemOptionActiva = false
 			TwitchRedeemName.Disable()
+		} else {
+			IsRedeemOptionActiva = true
+			TwitchRedeemName.Enable()
 		}
 		form.Refresh()
 	})
+
+	radio.SetSelected("Read all messages in chat")
 
 	ConnectToTwitch = widget.NewButton("Connect to Twitch", func() {
 		//TODO: Cambiar lógica dependiendo de si está activa o no la opción de canjes
@@ -91,7 +94,7 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 
 	TwitchConfWindow.SetContent(
 		container.NewVBox(
-			TwitchActiveRedeemOption,
+			radio,
 			form,
 			centeredButton,
 		),
