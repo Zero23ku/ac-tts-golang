@@ -13,9 +13,10 @@ import (
 	"fyne.io/fyne/v2/widget"
 
 	"ac-tts/internal/assets"
+	"ac-tts/internal/config"
 )
 
-var ConnectButton *widget.Button
+var TwitchConnectButton *widget.Button
 var PitchSlider *widget.Slider
 var PitchRow *fyne.Container
 var KofiButton *widget.Button
@@ -24,6 +25,7 @@ var UpdateButton *widget.Button
 var ActivateCommand *widget.Check
 var InputCommand *widget.Entry
 var DocsButton *widget.Button
+var AppReference *fyne.App
 
 // Internal
 var leftSpacer *canvas.Rectangle
@@ -35,6 +37,90 @@ var githubUrl *url.URL
 var isCommandActive = false
 var ttsCommand = "!tts" //valor default
 
+// Twitch conf
+
+var TwitchConfWindow fyne.Window
+var IsRedeemOptionActiva = false
+var TwitchRedeemName *widget.Entry
+var ConnectToTwitch *widget.Button
+var IsTwitchConnected = false
+var TwitchActiveRedeemOption *widget.Check
+var twitchConfiWindowsIsOpen = false
+var TwitchErrorWindow fyne.Window
+
+func initTwitchConfWindow(app fyne.App, onClick func()) {
+	TwitchConfWindow = app.NewWindow("Twitch configuration")
+
+	TwitchConfWindow.SetOnClosed(func() {
+		twitchConfiWindowsIsOpen = false
+	})
+
+	TwitchRedeemName = widget.NewEntry()
+	TwitchRedeemName.SetPlaceHolder("Enter Redeem's name")
+	TwitchRedeemName.Disable()
+	TwitchRedeemName.Resize(fyne.NewSize(100, TwitchRedeemName.MinSize().Height))
+
+	form := widget.NewForm(
+		widget.NewFormItem("Twitch Redeem's name", TwitchRedeemName),
+	)
+
+	radio := widget.NewRadioGroup([]string{"Read all messages in chat", "Use channel points"}, func(value string) {
+		if value == "Read all messages in chat" {
+			IsRedeemOptionActiva = false
+			TwitchRedeemName.Disable()
+		} else {
+			IsRedeemOptionActiva = true
+			TwitchRedeemName.Enable()
+		}
+		form.Refresh()
+	})
+
+	radio.SetSelected("Read all messages in chat")
+
+	ConnectToTwitch = widget.NewButton("Connect to Twitch", func() {
+		redeemText := ""
+		if IsRedeemOptionActiva {
+			redeemText = TwitchRedeemName.Text
+		}
+		config.SaveConfig(!IsRedeemOptionActiva, redeemText)
+		if IsRedeemOptionActiva && TwitchRedeemName.Text == "" {
+			initTwitchErrorWindow(app, "You must enter a Redeem's name")
+			TwitchErrorWindow.Show()
+			return
+		}
+		onClick()
+		TwitchConfWindow.Close()
+	})
+
+	centeredButton := container.New(
+		layout.NewBorderLayout(nil, nil, layout.NewSpacer(), layout.NewSpacer()),
+		ConnectToTwitch,
+	)
+
+	TwitchConfWindow.SetContent(
+		container.NewVBox(
+			radio,
+			form,
+			centeredButton,
+		),
+	)
+
+	TwitchConfWindow.Resize(fyne.NewSize(400, 100))
+	configs, err := config.ReadConfig()
+	if err != nil {
+		initTwitchErrorWindow(app, "Error reading tts_config.json")
+		TwitchErrorWindow.Show()
+	} else {
+		if configs.TwitchConfig.ReadAllChat {
+			radio.SetSelected("Read all messages in chat")
+		} else {
+			radio.SetSelected("Use channel points")
+			TwitchRedeemName.SetText(configs.TwitchConfig.RedeemName)
+		}
+	}
+
+}
+
 func InitLeftSpacer() {
 	leftSpacer = canvas.NewRectangle(color.Transparent)
 	leftSpacer.SetMinSize(fyne.NewSize(20, 0))
@@ -44,14 +130,21 @@ func InitTestPitchButton(onClick func()) {
 	TestPitchButton = widget.NewButton("Test Voice", onClick)
 }
 
-func InitConnectButton(onClick func()) {
-	ConnectButton = widget.NewButton("Connect to Twitch", onClick)
+func InitTwitchConnectButton(onClick func()) {
+
+	TwitchConnectButton = widget.NewButton("Connect to Twitch", func() {
+		initTwitchConfWindow(*AppReference, onClick)
+		if !twitchConfiWindowsIsOpen {
+			TwitchConfWindow.Show()
+			twitchConfiWindowsIsOpen = true
+		}
+	})
 }
 
 func SetConnected() {
 	fyne.Do(func() {
-		ConnectButton.SetText("Connected")
-		ConnectButton.Disable()
+		TwitchConnectButton.SetText("Connected")
+		TwitchConnectButton.Disable()
 	})
 }
 
@@ -134,4 +227,9 @@ func GetTTSCommand() string {
 
 func IsTTSCommandActive() bool {
 	return isCommandActive
+}
+
+func initTwitchErrorWindow(app fyne.App, msg string) {
+	TwitchErrorWindow = app.NewWindow("!Error")
+	TwitchErrorWindow.SetContent(widget.NewLabel(msg))
 }

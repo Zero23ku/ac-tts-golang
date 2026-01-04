@@ -4,7 +4,9 @@ go 1.25.4
 
 require (
 	fyne.io/fyne/v2 v2.7.1
+	github.com/dhkimxx/GoChzzkChatCrawler v0.0.0-20250212124928-852ff59b9c6e
 	github.com/faiface/beep v1.1.0
+	github.com/joeyak/go-twitch-eventsub/v3 v3.0.1
 	github.com/mozillazg/go-unidecode v0.2.0
 	github.com/steampoweredtaco/gotiktoklive v0.0.4
 )
@@ -13,8 +15,8 @@ require (
 	fyne.io/systray v1.11.1-0.20250603113521-ca66a66d8b58 // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
+	github.com/coder/websocket v1.8.12 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dhkimxx/GoChzzkChatCrawler v0.0.0-20250212124928-852ff59b9c6e // indirect
 	github.com/erni27/imcache v1.2.1 // indirect
 	github.com/fredbi/uri v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
