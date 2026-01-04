@@ -57,10 +57,11 @@ type SnippetChat struct {
 }
 
 type ItemChat struct {
-	Kind    string      `json:"kind"`
-	Etag    string      `json:"etag"`
-	Id      string      `json:"id"`
-	Snippet SnippetChat `json:"snippet"`
+	Kind          string        `json:"kind"`
+	Etag          string        `json:"etag"`
+	Id            string        `json:"id"`
+	Snippet       SnippetChat   `json:"snippet"`
+	AuthorDetails AuthorDetails `json:"authorDetails"`
 }
 
 type LivechatResponse struct {
@@ -69,6 +70,10 @@ type LivechatResponse struct {
 	NextpageToken         string     `json:"nextPageToken"`
 	Items                 []ItemChat `json:"items"`
 	PollingIntervalMillis int        `json:"pollingIntervalMillis"`
+}
+
+type AuthorDetails struct {
+	DisplayName string `json:"displayName"`
 }
 
 var ytWindowIsOpen = false
@@ -143,17 +148,18 @@ func GetYTChannelInfo(ctx context.Context) {
 				}
 				for i := 0; i < len(response.Items); i++ {
 					ytMsg := response.Items[i].Snippet.TextMessageDetails.MessageText
+					chatter := response.Items[i].AuthorDetails.DisplayName
 					if common.IsTTSCommandActive() && strings.HasPrefix(ytMsg, common.GetTTSCommand()) {
 						if common.IsPitchRandom {
-							reproductor.Reproduce(ytMsg, "", common.GetRandomPitch())
+							reproductor.Reproduce(ytMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
 						} else {
-							reproductor.Reproduce(ytMsg, "", common.Pitch)
+							reproductor.Reproduce(ytMsg, chatter, common.Pitch, common.IsPitchRandom)
 						}
 					} else if !common.IsTTSCommandActive() {
 						if common.IsPitchRandom {
-							reproductor.Reproduce(ytMsg, "", common.GetRandomPitch())
+							reproductor.Reproduce(ytMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
 						} else {
-							reproductor.Reproduce(ytMsg, "", common.Pitch)
+							reproductor.Reproduce(ytMsg, chatter, common.Pitch, common.IsPitchRandom)
 						}
 					}
 

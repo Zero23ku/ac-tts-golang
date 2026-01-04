@@ -28,9 +28,9 @@ func connectToChzzk(liveid string, ctx context.Context) {
 	// Create a new crawler client with callback handler
 	crawlerClient := crawler.NewCrawlerClient(liveid, 1, func(msg crawler.ChzzkChatMessage) {
 		if common.IsPitchRandom {
-			reproductor.Reproduce(msg.Content, "", common.GetRandomPitch())
+			reproductor.Reproduce(msg.Content, msg.Nickname, common.GetRandomPitch(), common.IsPitchRandom)
 		} else {
-			reproductor.Reproduce(msg.Content, "", common.Pitch)
+			reproductor.Reproduce(msg.Content, msg.Nickname, common.Pitch, common.IsPitchRandom)
 		}
 		time.Sleep(500 * time.Millisecond)
 	})

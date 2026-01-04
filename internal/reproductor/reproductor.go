@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"sync"
 	"time"
@@ -56,7 +55,7 @@ func SaveAsWav(text string, fileName string) {
 	}
 }
 
-func Reproduce(text string, user string, pitch float64) {
+func Reproduce(text string, user string, pitch float64, isRandomPitch bool) {
 	ani, err := animalese.NewAnimaleseFromBytes(assets.AnimaleseWav, func() {
 
 	})
@@ -67,7 +66,14 @@ func Reproduce(text string, user string, pitch float64) {
 		panic(err)
 	}
 	text = removeAccents(text)
-	wave := ani.AnimaleseFunc(text, true, pitch)
+	var actualPitch float64
+	if isRandomPitch {
+		actualPitch = getPitchForUser(user, pitch)
+	} else {
+		actualPitch = pitch
+	}
+
+	wave := ani.AnimaleseFunc(text, true, actualPitch)
 
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
 	if err != nil {
@@ -94,18 +100,11 @@ func Reproduce(text string, user string, pitch float64) {
 	<-done
 }
 
-func GetPitchForUser(user string) float64 {
+func getPitchForUser(user string, pitch float64) float64 {
 	if value, ok := UserMap[user]; ok {
 
 		return value
 	}
-	min := 0.2
-	max := 2.0
-	step := 0.1
-	steps := int((max - min) / step)
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	idx := r.Intn(steps + 1)
-	pitch := min + float64(idx)*step
 	UserMap[user] = pitch
 	return pitch
 }

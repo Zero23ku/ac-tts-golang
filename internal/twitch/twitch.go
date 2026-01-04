@@ -121,15 +121,15 @@ func SubscribeToChat(token string) {
 								chatMsg := message[1]
 								if common.IsTTSCommandActive() && strings.HasPrefix(chatMsg, common.GetTTSCommand()) {
 									if common.IsPitchRandom {
-										reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch())
+										reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
 									} else {
-										reproductor.Reproduce(chatMsg, message[0], common.Pitch)
+										reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
 									}
 								} else if !common.IsTTSCommandActive() {
 									if common.IsPitchRandom {
-										reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch())
+										reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
 									} else {
-										reproductor.Reproduce(chatMsg, message[0], common.Pitch)
+										reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
 									}
 								}
 
@@ -244,9 +244,9 @@ func subscribeToEvent(accessToken string, userID string) {
 		}
 		if common.TwitchRedeemName.Text == r.Reward.Title {
 			if common.IsPitchRandom {
-				reproductor.Reproduce(r.UserInput, "", common.GetRandomPitch())
+				reproductor.Reproduce(r.UserInput, r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
 			} else {
-				reproductor.Reproduce(r.UserInput, "", common.Pitch)
+				reproductor.Reproduce(r.UserInput, r.UserName, common.Pitch, common.IsPitchRandom)
 			}
 		}
 	})

@@ -117,7 +117,7 @@ func initLocalWindow(app fyne.App) {
 				time.Sleep(500 * time.Millisecond)
 				continue
 			}
-			reproductor.Reproduce(line, "", common.Pitch)
+			reproductor.Reproduce(line, "", common.Pitch, false)
 
 		}
 

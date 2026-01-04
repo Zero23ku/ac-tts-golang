@@ -88,7 +88,7 @@ func main() {
 	pitchData := binding.BindFloat(&common.Pitch)
 	common.InitPitchRow(pitchData)
 	common.InitTestPitchButton(func() {
-		reproductor.Reproduce("Hola esto es una prueba de pitch :)", "", common.Pitch)
+		reproductor.Reproduce("Hola esto es una prueba de pitch :)", "", common.Pitch, false)
 	})
 	common.AppReference = &a
 	common.InitTwitchConnectButton(func() { twitch.GetAuthorization() })

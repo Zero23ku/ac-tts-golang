@@ -50,18 +50,19 @@ func connectToTikTokChat(username string, ctx context.Context) {
 				switch e := event.(type) {
 				case gotiktoklive.ChatEvent:
 					tiktokMsg := gotiktoklive.ChatEvent(e).Comment
+					chatter := gotiktoklive.ChatEvent(e).User.Nickname
 					if common.IsTTSCommandActive() && strings.HasPrefix(tiktokMsg, common.GetTTSCommand()) {
 						if common.IsPitchRandom {
-							reproductor.Reproduce(tiktokMsg, "", common.GetRandomPitch())
+							reproductor.Reproduce(tiktokMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
 						} else {
-							reproductor.Reproduce(tiktokMsg, "", common.Pitch)
+							reproductor.Reproduce(tiktokMsg, chatter, common.Pitch, common.IsPitchRandom)
 						}
 
 					} else if !common.IsTTSCommandActive() {
 						if common.IsPitchRandom {
-							reproductor.Reproduce(tiktokMsg, "", common.GetRandomPitch())
+							reproductor.Reproduce(tiktokMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
 						} else {
-							reproductor.Reproduce(tiktokMsg, "", common.Pitch)
+							reproductor.Reproduce(tiktokMsg, chatter, common.Pitch, common.IsPitchRandom)
 						}
 					}
 
