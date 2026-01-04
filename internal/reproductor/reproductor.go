@@ -56,7 +56,7 @@ func SaveAsWav(text string, fileName string) {
 	}
 }
 
-func Reproduce(text string, user string) {
+func Reproduce(text string, user string, pitch float64) {
 	ani, err := animalese.NewAnimaleseFromBytes(assets.AnimaleseWav, func() {
 
 	})
@@ -67,7 +67,7 @@ func Reproduce(text string, user string) {
 		panic(err)
 	}
 	text = removeAccents(text)
-	wave := ani.AnimaleseFunc(text, true, common.Pitch)
+	wave := ani.AnimaleseFunc(text, true, pitch)
 
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
 	if err != nil {

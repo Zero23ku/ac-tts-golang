@@ -63,7 +63,7 @@ func initSTTWindow(app fyne.App) {
 	})
 
 	testPitchSTTButton = widget.NewButton("Test Pitch", func() {
-		reproductor.Reproduce("Esto es una prueba de Pitch :)", "")
+		reproductor.Reproduce("Esto es una prueba de Pitch :)", "", common.Pitch)
 	})
 
 	fileButton = widget.NewButton("Select text file", func() {
@@ -129,8 +129,12 @@ func initSTTWindow(app fyne.App) {
 					if timeRegex.MatchString(line) {
 						continue
 					}
+					if common.IsPitchRandom {
+						reproductor.Reproduce(line, "", common.GetRandomPitch())
+					} else {
+						reproductor.Reproduce(line, "", common.Pitch)
+					}
 
-					reproductor.Reproduce(line, "")
 					time.Sleep(1500 * time.Millisecond)
 				}
 

@@ -144,9 +144,17 @@ func GetYTChannelInfo(ctx context.Context) {
 				for i := 0; i < len(response.Items); i++ {
 					ytMsg := response.Items[i].Snippet.TextMessageDetails.MessageText
 					if common.IsTTSCommandActive() && strings.HasPrefix(ytMsg, common.GetTTSCommand()) {
-						reproductor.Reproduce(ytMsg, "")
+						if common.IsPitchRandom {
+							reproductor.Reproduce(ytMsg, "", common.GetRandomPitch())
+						} else {
+							reproductor.Reproduce(ytMsg, "", common.Pitch)
+						}
 					} else if !common.IsTTSCommandActive() {
-						reproductor.Reproduce(ytMsg, "")
+						if common.IsPitchRandom {
+							reproductor.Reproduce(ytMsg, "", common.GetRandomPitch())
+						} else {
+							reproductor.Reproduce(ytMsg, "", common.Pitch)
+						}
 					}
 
 					time.Sleep(time.Duration(1200) * time.Millisecond)

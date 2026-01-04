@@ -88,7 +88,7 @@ func main() {
 	pitchData := binding.BindFloat(&common.Pitch)
 	common.InitPitchRow(pitchData)
 	common.InitTestPitchButton(func() {
-		reproductor.Reproduce("Hola esto es una prueba de pitch :)", "")
+		reproductor.Reproduce("Hola esto es una prueba de pitch :)", "", common.Pitch)
 	})
 	common.AppReference = &a
 	common.InitTwitchConnectButton(func() { twitch.GetAuthorization() })
@@ -106,11 +106,15 @@ func main() {
 	common.InitCommandCheck()
 	common.InitCommandInput()
 	common.InitDocsButton()
+	common.InitRandomPitch()
 
 	commandContent := container.NewCenter(
-		container.NewHBox(
-			common.ActivateCommand,
-			common.InputCommand,
+		container.NewVBox(
+			container.NewHBox(
+				common.ActivateCommand,
+				common.InputCommand,
+			),
+			common.RandomPitch,
 		),
 	)
 
@@ -135,6 +139,7 @@ func main() {
 			container.NewVBox(content, commandContent, local.LocalButton, stt.STTButton),
 		),
 	)
+
 	w.ShowAndRun()
 
 }
