@@ -16,14 +16,6 @@ before:
     - go generate ./...
 
 builds:
-  - id: linux
-    env:
-      - CGO_ENABLED=1
-    goos:
-      - linux
-    goarch:
-      - amd64
-    binary: "ac-tts-{{ .Version }}"
 
   - id: windows
     env:
@@ -34,24 +26,6 @@ builds:
     goarch:
       - amd64
     binary: "ac-tts-{{ .Version }}"
-
-  #- id: darwin-amd64
-  #  env:
-  #    - CGO_ENABLED=1
-  #  goos:
-  #    - darwin
-  #  goarch:
-  #    - amd64
-  #  binary: "ac-tts-{{ .Version }}"
-
-  #- id: darwin-arm64
-  #  env:
-  #    - CGO_ENABLED=1
-  #  goos:
-  #    - darwin
-  #  goarch:
-  #    - arm64
-  #  binary: "ac-tts-{{ .Version }}"
 
 
 archives:
