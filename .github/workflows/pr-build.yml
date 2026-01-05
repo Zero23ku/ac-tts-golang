@@ -57,7 +57,12 @@ jobs:
       - name: Ensure Xcode tools
         run: sudo xcode-select --install || true
       - name: Install deps
-        run: brew install pkg-config glfw 
+        run: |
+          brew install pkg-config glfw
+          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH  
+          export CGO_LDFLAGS="-L/usr/local/lib" 
+          echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> $GITHUB_ENV
+          echo "CGO_LDFLAGS=$CGO_LDFLAGS" >> $GITHUB_ENV
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
@@ -89,7 +94,12 @@ jobs:
       - name: Ensure Xcode tools
         run: sudo xcode-select --install || true
       - name: Install deps
-        run: brew install pkg-config glfw 
+        run: |
+          brew install pkg-config glfw
+          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH  
+          export CGO_LDFLAGS="-L/usr/local/lib"  
+          echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> $GITHUB_ENV
+          echo "CGO_LDFLAGS=$CGO_LDFLAGS" >> $GITHUB_ENV
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
