@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"strings"
 )
 
 type TwitchConfig struct {
@@ -10,8 +11,13 @@ type TwitchConfig struct {
 	RedeemName  string `json:"redeem_name"`
 }
 
+type WhitelistConfig struct {
+	RawWhitelist string `json:"raw_whitelist"`
+}
+
 type Config struct {
-	TwitchConfig TwitchConfig `json:"twitch_config"`
+	TwitchConfig    TwitchConfig    `json:"twitch_config"`
+	WhitelistConfig WhitelistConfig `json:"whitelist_config"`
 }
 
 var configFileName = "tts_config.json"
@@ -38,13 +44,16 @@ func ReadConfig() (Config, error) {
 	return payload, nil
 }
 
-func SaveConfig(readAllChat bool, redeemName string) {
+func SaveConfig(readAllChat bool, redeemName string, whitelist []string) {
 	var twitchConfigs TwitchConfig
+	var whitelistconfs WhitelistConfig
 	twitchConfigs.ReadAllChat = readAllChat
 	twitchConfigs.RedeemName = redeemName
+	whitelistconfs.RawWhitelist = strings.Join(whitelist, ",")
 
 	var configs Config
 	configs.TwitchConfig = twitchConfigs
+	configs.WhitelistConfig = whitelistconfs
 
 	file, err := os.Create(configFileName)
 	if err != nil {

@@ -18,6 +18,7 @@ import (
 	"ac-tts/internal/common"
 	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
+	"ac-tts/internal/whitelist"
 )
 
 const TWITCH_URL = "https://id.twitch.tv/oauth2/authorize" +
@@ -123,15 +124,33 @@ func SubscribeToChat(token string) {
 								chatMsg := message[1]
 								if common.IsTTSCommandActive() && strings.HasPrefix(chatMsg, common.GetTTSCommand()) {
 									if common.IsPitchRandom {
-										reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(message[0]) {
+											reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+										} else if !whitelist.IsWhitelistActive {
+											reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+										}
+
 									} else {
-										reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+
+										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(message[0]) {
+											reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+										} else if !whitelist.IsWhitelistActive {
+											reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+										}
 									}
 								} else if !common.IsTTSCommandActive() {
 									if common.IsPitchRandom {
-										reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(message[0]) {
+											reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+										} else if !whitelist.IsWhitelistActive {
+											reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+										}
 									} else {
-										reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(message[0]) {
+											reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+										} else if !whitelist.IsWhitelistActive {
+											reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+										}
 									}
 								}
 

@@ -2,6 +2,7 @@ package chzzk
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -12,6 +13,7 @@ import (
 
 	"ac-tts/internal/common"
 	"ac-tts/internal/reproductor"
+	"ac-tts/internal/whitelist"
 )
 
 var chzzkWindowIsOpen = false
@@ -27,26 +29,53 @@ func connectToChzzk(liveid string, ctx context.Context) {
 
 	// Create a new crawler client with callback handler
 	crawlerClient := crawler.NewCrawlerClient(liveid, 1, func(msg crawler.ChzzkChatMessage) {
-		if common.IsPitchRandom {
-			reproductor.Reproduce(msg.Content, msg.Nickname, common.GetRandomPitch(), common.IsPitchRandom)
-		} else {
-			reproductor.Reproduce(msg.Content, msg.Nickname, common.Pitch, common.IsPitchRandom)
+
+		if common.IsTTSCommandActive() && strings.HasPrefix(msg.Content, common.GetTTSCommand()) {
+			if common.IsPitchRandom {
+				if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(msg.Nickname) {
+					reproductor.Reproduce(msg.Content, msg.Nickname, common.GetRandomPitch(), common.IsPitchRandom)
+				} else if !whitelist.IsWhitelistActive {
+					reproductor.Reproduce(msg.Content, msg.Nickname, common.GetRandomPitch(), common.IsPitchRandom)
+				}
+
+			} else {
+
+				if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(msg.Nickname) {
+					reproductor.Reproduce(msg.Content, msg.Nickname, common.Pitch, common.IsPitchRandom)
+				} else if !whitelist.IsWhitelistActive {
+					reproductor.Reproduce(msg.Content, msg.Nickname, common.Pitch, common.IsPitchRandom)
+				}
+			}
+		} else if !common.IsTTSCommandActive() {
+			if common.IsPitchRandom {
+				if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(msg.Nickname) {
+					reproductor.Reproduce(msg.Content, msg.Nickname, common.GetRandomPitch(), common.IsPitchRandom)
+				} else if !whitelist.IsWhitelistActive {
+					reproductor.Reproduce(msg.Content, msg.Nickname, common.GetRandomPitch(), common.IsPitchRandom)
+				}
+			} else {
+				if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(msg.Nickname) {
+					reproductor.Reproduce(msg.Content, msg.Nickname, common.Pitch, common.IsPitchRandom)
+				} else if !whitelist.IsWhitelistActive {
+					reproductor.Reproduce(msg.Content, msg.Nickname, common.Pitch, common.IsPitchRandom)
+				}
+			}
 		}
 		time.Sleep(500 * time.Millisecond)
 	})
 
 	go func() {
+		// Start crawling
+		err := crawlerClient.Run()
+		if err != nil {
+			CHZZKErrorWindow.Show()
+			return
+		}
 		for {
 			select {
 			case <-ctx.Done():
 				return
-			default:
-				// Start crawling
-				err := crawlerClient.Run()
-				if err != nil {
-					CHZZKErrorWindow.Show()
-					return
-				}
+
 			}
 		}
 	}()

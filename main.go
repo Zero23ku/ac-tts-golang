@@ -19,6 +19,7 @@ import (
 	"ac-tts/internal/assets"
 	"ac-tts/internal/chzzk"
 	"ac-tts/internal/common"
+	"ac-tts/internal/config"
 	"ac-tts/internal/github"
 	"ac-tts/internal/local"
 	"ac-tts/internal/logging"
@@ -27,10 +28,11 @@ import (
 	"ac-tts/internal/tiktok"
 	"ac-tts/internal/twitch"
 	"ac-tts/internal/web"
+	"ac-tts/internal/whitelist"
 	"ac-tts/internal/youtube"
 )
 
-var version = "v1.0.0"
+var version = "v1.1.1"
 var updateTime = false
 
 func main() {
@@ -78,7 +80,7 @@ func main() {
 
 	wave := ani.AnimaleseFunc("test", true, 1.0)
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
-	if err != nil {
+	if err != nil {{"twitch_config":{"read_all_chat":false,"redeem_name":"hola que ase"},"whitelist_config":{"raw_wh
 		logging.CreateLog("main - testing Animalese", err)
 		log.Fatal(err)
 	}
@@ -107,6 +109,7 @@ func main() {
 	common.InitCommandInput()
 	common.InitDocsButton()
 	common.InitRandomPitch()
+	whitelist.InitWhiteList()
 
 	commandContent := container.NewCenter(
 		container.NewVBox(
@@ -116,6 +119,11 @@ func main() {
 			),
 			common.RandomPitch,
 		),
+	)
+
+	mainContainer := container.NewVBox(
+		commandContent,
+		whitelist.WhiteListContainer,
 	)
 
 	local.AppReference = &a
@@ -136,10 +144,12 @@ func main() {
 		container.New(
 			layout.NewBorderLayout(nil, footer, nil, nil),
 			footer,
-			container.NewVBox(content, commandContent, local.LocalButton, stt.STTButton),
+			container.NewVBox(content, mainContainer, local.LocalButton, stt.STTButton),
 		),
 	)
-
+	w.SetOnClosed(func() {
+		config.SaveConfig(!common.IsRedeemOptionActiva, common.TwitchRedeemName.Text, whitelist.UserWhitelist)
+	})
 	w.ShowAndRun()
 
 }

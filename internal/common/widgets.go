@@ -79,11 +79,11 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 	radio.SetSelected("Read all messages in chat")
 
 	ConnectToTwitch = widget.NewButton("Connect to Twitch", func() {
-		redeemText := ""
+		/*redeemText := ""
 		if IsRedeemOptionActiva {
 			redeemText = TwitchRedeemName.Text
-		}
-		config.SaveConfig(!IsRedeemOptionActiva, redeemText)
+		}*/
+		//config.SaveConfig(!IsRedeemOptionActiva, redeemText, whitelist.UserWhitelist)
 		if IsRedeemOptionActiva && TwitchRedeemName.Text == "" {
 			initTwitchErrorWindow(app, "You must enter a Redeem's name")
 			TwitchErrorWindow.Show()
