@@ -6,47 +6,7 @@ on:
       - "v*"
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            pkg-config \
-            libasound2-dev \
-            libgl1-mesa-dev \
-            libglfw3-dev \
-            xorg-dev \
-            gcc-mingw-w64-x86-64
-
-      - name: Set up environment
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.25.5'
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          version: latest
-          args: release --clean --config .goreleaser-linux.yaml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-linux
-          path: dist/
-          retention-days: 1
-
-  build-windows:
+  build-linux-windows:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -123,26 +83,13 @@ jobs:
           retention-days: 1
 
   upload-release:
-    needs: [build-linux, build-windows, build-macos]
+    needs: [build-linux-windows, build-macos]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Download Linux artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-linux
-          path: dist-linux/
-
-      - name: Download Windows artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-windows
-          path: dist-windows/
-
       - name: Download macOS amd64 artifacts
         uses: actions/download-artifact@v4
         with:
@@ -157,10 +104,6 @@ jobs:
 
       - name: List all downloaded files
         run: |
-          echo "=== Linux ==="
-          find dist-linux/ -type f | sort
-          echo "=== Windows ==="
-          find dist-windows/ -type f | sort
           echo "=== macOS amd64 ==="
           find dist-macos-amd64/ -type f | sort
           echo "=== macOS arm64 ==="
@@ -171,8 +114,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            dist-linux/**/*
-            dist-windows/**/*
             dist-macos-amd64/**/*
             dist-macos-arm64/**/*
           draft: false
