@@ -12,7 +12,7 @@ import (
 	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
-	"github.com/mozillazg/go-unidecode"
+	"github.com/fiam/gounidecode/unidecode"
 
 	"ac-tts/internal/animalese"
 	"ac-tts/internal/assets"
