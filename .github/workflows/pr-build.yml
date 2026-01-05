@@ -5,7 +5,6 @@ on:
     branches:
       - main
 
-
 jobs:
   build-linux-windows:
     runs-on: ubuntu-latest
@@ -29,129 +28,50 @@ jobs:
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.5'
+          go-version: '1.25.4'
 
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          version: latest
-          args: release --snapshot --clean --config .goreleaser.yaml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+      - name: Build Linux
+        run: |
+          CGO_ENABLED=1 go build -ldflags "-X main.Version=pr-${{ github.event.pull_request.number }}" -o ac-tts-linux-amd64 main.go
 
-      - name: Upload artifacts
+      - name: Build Windows
+        run: |
+          CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc go build -ldflags "-X main.Version=pr-${{ github.event.pull_request.number }}" -o ac-tts-windows-amd64.exe main.go
+
+      - name: Upload Linux binary
         uses: actions/upload-artifact@v4
         with:
-          name: dist-linux-windows
-          path: dist/
-          retention-days: 1
+          name: ac-tts-linux-amd64
+          path: ac-tts-linux-amd64
 
-  build-macos-arm64:
+      - name: Upload Windows binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ac-tts-windows-amd64
+          path: ac-tts-windows-amd64.exe
+
+  build-macos:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        goarch: [amd64, arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Ensure Xcode tools
-        run: sudo xcode-select --install || true
-      - name: Install deps
-        run: |
-          brew install pkg-config glfw
-          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH  
-          export CGO_LDFLAGS="-L/usr/local/lib" 
-          echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> $GITHUB_ENV
-          echo "CGO_LDFLAGS=$CGO_LDFLAGS" >> $GITHUB_ENV
-      - name: Set up environment
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.25.5'
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          version: latest
-          args: release --snapshot --clean --config .goreleaser-macos-arm64.yaml  
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-macos
-          path: dist/
-          retention-days: 1
-  
-  build-macos-intel:
-    runs-on: macos-15-intel
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Ensure Xcode tools
-        run: sudo xcode-select --install || true
-      - name: Install deps
-        run: |
-          brew install pkg-config glfw
-          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH  
-          export CGO_LDFLAGS="-L/usr/local/lib"  
-          echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> $GITHUB_ENV
-          echo "CGO_LDFLAGS=$CGO_LDFLAGS" >> $GITHUB_ENV
-      - name: Set up environment
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.25.5'
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          version: latest
-          args: release --snapshot --clean --config .goreleaser-macos-intel.yaml  
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-macos
-          path: dist/
-          retention-days: 1
-
-  release:
-    needs: [build-linux-windows, build-macos-intel, build-macos-arm64]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download Linux/Windows artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-linux-windows
-          path: dist/
-
-      - name: Download macOS artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-macos
-          path: dist/
-          merge-multiple: true
 
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
           go-version: '1.25.4'
 
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+      - name: Build macOS ${{ matrix.goarch }}
+        run: |
+          CGO_ENABLED=1 GOOS=darwin GOARCH=${{ matrix.goarch }} go build -ldflags "-X main.Version=pr-${{ github.event.pull_request.number }}" -o ac-tts-darwin-${{ matrix.goarch }} main.go
+
+      - name: Upload macOS binary
+        uses: actions/upload-artifact@v4
         with:
-          version: latest
-          args: continue --merge
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: ac-tts-darwin-${{ matrix.goarch }}
+          path: ac-tts-darwin-${{ matrix.goarch }}
