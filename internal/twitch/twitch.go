@@ -65,6 +65,8 @@ func GetAuthorization() {
 		err = exec.Command("xdg-open", TWITCH_URL).Start()
 	case "windows":
 		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", TWITCH_URL).Start()
+	case "darwin":
+		err = exec.Command("open", TWITCH_URL).Start()
 	default:
 		err = fmt.Errorf("unsupported platform")
 	}
