@@ -28,27 +28,23 @@ jobs:
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.4'
+          go-version: '1.25.5'
 
-      - name: Build Linux
-        run: |
-          CGO_ENABLED=1 go build -ldflags "-X main.Version=pr-${{ github.event.pull_request.number }}" -o ac-tts-linux-amd64 main.go
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
 
-      - name: Build Windows
-        run: |
-          CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc go build -ldflags "-X main.Version=pr-${{ github.event.pull_request.number }}" -o ac-tts-windows-amd64.exe main.go
-
-      - name: Upload Linux binary
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ac-tts-linux-amd64
-          path: ac-tts-linux-amd64
-
-      - name: Upload Windows binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: ac-tts-windows-amd64
-          path: ac-tts-windows-amd64.exe
+          name: dist-linux-windows
+          path: dist/
+          retention-days: 1
 
   build-macos:
     runs-on: macos-latest
@@ -68,10 +64,69 @@ jobs:
 
       - name: Build macOS ${{ matrix.goarch }}
         run: |
-          CGO_ENABLED=1 GOOS=darwin GOARCH=${{ matrix.goarch }} go build -ldflags "-X main.Version=pr-${{ github.event.pull_request.number }}" -o ac-tts-darwin-${{ matrix.goarch }} main.go
+          # Crear directorios con la estructura que GoReleaser espera
+          mkdir -p dist/ac-tts_darwin_${{ matrix.goarch }}
+          
+          # Construir el binario
+          CGO_ENABLED=1 GOOS=darwin GOARCH=${{ matrix.goarch }} go build \
+            -ldflags "-X main.Version=${{ github.ref_name }}" \
+            -o dist/ac-tts_darwin_${{ matrix.goarch }}/ac-tts \
+            main.go
+          
+          # Crear checksum
+          cd dist/ac-tts_darwin_${{ matrix.goarch }}
+          shasum -a 256 ac-tts > ac-tts_${{ matrix.goarch }}.sha256
+          cd ../..
 
-      - name: Upload macOS binary
+      - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ac-tts-darwin-${{ matrix.goarch }}
-          path: ac-tts-darwin-${{ matrix.goarch }}
+          name: dist-macos-${{ matrix.goarch }}
+          path: dist/ac-tts_darwin_${{ matrix.goarch }}/
+          retention-days: 1
+
+  release:
+    needs: [build-linux-windows, build-macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Linux/Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-linux-windows
+          path: dist/
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: dist-macos-*
+          path: dist/
+          merge-multiple: true
+
+      - name: List downloaded files
+        run: |
+          echo "Contenido del directorio dist/:"
+          find dist/ -type f -name "*" | sort
+          
+          echo -e "\nEstructura de directorios:"
+          find dist/ -type d | sort
+
+      - name: Set up environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.5'
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
