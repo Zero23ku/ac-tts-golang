@@ -16,7 +16,15 @@ before:
     - go generate ./...
 
 builds:
-
+  - id: linux
+    env:
+      - CGO_ENABLED=1
+    goos:
+      - linux
+    goarch:
+      - amd64
+    binary: "ac-tts-{{ .Version }}"
+  
   - id: windows
     env:
       - CGO_ENABLED=1
@@ -26,7 +34,6 @@ builds:
     goarch:
       - amd64
     binary: "ac-tts-{{ .Version }}"
-
 
 archives:
   - formats: [tar.gz]
