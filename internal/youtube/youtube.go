@@ -14,6 +14,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	YtChat "github.com/johanvandegriff/youtube-live-chat-downloader/v2"
 
 	"ac-tts/internal/common"
 	"ac-tts/internal/logging"
@@ -182,30 +183,32 @@ func initYoutubeWindow(app fyne.App) {
 	YoutubeWindow.SetOnClosed(func() {
 		ytWindowIsOpen = false
 	})
-
-	ytApiKeyInput := widget.NewEntry()
-	ytApiKeyInput.SetPlaceHolder("Enter your Youtube's API Key here")
-	ytApiKeyInput.Resize(fyne.NewSize(100, ytApiKeyInput.MinSize().Height))
+	/*
+		ytApiKeyInput := widget.NewEntry()
+		ytApiKeyInput.SetPlaceHolder("Enter your Youtube's API Key here")
+		ytApiKeyInput.Resize(fyne.NewSize(100, ytApiKeyInput.MinSize().Height))
+	*/
 
 	ytVideoInput := widget.NewEntry()
 	ytVideoInput.SetPlaceHolder("Enter Livestream's url: https://www.youtube.com/watch?v=your-id")
 	ytVideoInput.Resize(fyne.NewSize(100, ytVideoInput.MinSize().Height))
 
 	ytApiKeySubmit := widget.NewButton("Connect", func() {
-		API_KEY = ytApiKeyInput.Text
+		//API_KEY = ytApiKeyInput.Text
 
 		ytID, err := getYTID(ytVideoInput.Text)
 		if err != nil && ytID == "" {
 			logging.CreateLog("Youtube - ", err)
 		}
 		VIDEO_ID = ytID
-		GetYTChannelInfo(CTX)
+		//GetYTChannelInfo(CTX)
+		connectToChat()
 		YoutubeWindow.Close()
 	})
 
-	form := widget.NewForm(
+	/*form := widget.NewForm(
 		widget.NewFormItem("Youtube's API Key", ytApiKeyInput),
-	)
+	)*/
 
 	formVide := widget.NewForm(
 		widget.NewFormItem("Youtube livestream URL", ytVideoInput),
@@ -216,12 +219,12 @@ func initYoutubeWindow(app fyne.App) {
 		ytApiKeySubmit,
 	)
 
-	YoutubeWindow.SetContent(container.NewVBox(form, formVide, centeredButton))
+	YoutubeWindow.SetContent(container.NewVBox( /*form,*/ formVide, centeredButton))
 	YoutubeWindow.Resize(fyne.NewSize(400, 100))
 }
 
 func InitConnectYTButton() {
-	ConnectYTButton = widget.NewButton("Connect to Youtube (Alpha)", func() {
+	ConnectYTButton = widget.NewButton("Connect to Youtube", func() {
 		initYoutubeWindow(*AppReference)
 		if !ytWindowIsOpen {
 			YoutubeWindow.Show()
@@ -244,4 +247,53 @@ func getYTID(ytUrl string) (string, error) {
 	}
 
 	return id, nil
+}
+
+func connectToChat() {
+
+	continuation, cfg, error := YtChat.ParseInitialData("https://www.youtube.com/watch?v=" + VIDEO_ID)
+	if error != nil {
+		logging.CreateLog("Youtube getting chat- ", error)
+		log.Fatal(error)
+	}
+	go func() {
+		for {
+			select {
+			case <-CTX.Done():
+				return
+			default:
+				chat, newContinuation, error := YtChat.FetchContinuationChat(continuation, cfg)
+				if error == YtChat.ErrLiveStreamOver {
+					logging.CreateLog("Youtube livestream - ", error)
+					log.Fatal("Live stream over")
+				}
+				if error != nil {
+					//log.Print(error)
+					continue
+				}
+				continuation = newContinuation
+
+				for _, msg := range chat {
+					/*fmt.Print(msg.Timestamp, " | ")
+					fmt.Println(msg.AuthorName, ": ", msg.Message)*/
+					if common.IsTTSCommandActive() && strings.HasPrefix(msg.Message, common.GetTTSCommand()) {
+						if common.IsPitchRandom {
+							reproductor.Reproduce(msg.Message, msg.AuthorName, common.GetRandomPitch(), common.IsPitchRandom)
+						} else {
+							reproductor.Reproduce(msg.Message, msg.AuthorName, common.Pitch, common.IsPitchRandom)
+						}
+					} else if !common.IsTTSCommandActive() {
+						if common.IsPitchRandom {
+							reproductor.Reproduce(msg.Message, msg.AuthorName, common.GetRandomPitch(), common.IsPitchRandom)
+						} else {
+							reproductor.Reproduce(msg.Message, msg.AuthorName, common.Pitch, common.IsPitchRandom)
+						}
+					}
+
+					time.Sleep(1000 * time.Millisecond)
+				}
+			}
+
+		}
+	}()
 }
