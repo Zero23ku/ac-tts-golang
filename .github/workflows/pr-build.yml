@@ -56,9 +56,6 @@ jobs:
           fetch-depth: 0
       - name: Ensure Xcode tools
         run: sudo xcode-select --install || true
-      - name: Install deps
-        run: brew install pkg-config
-
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
@@ -89,8 +86,6 @@ jobs:
           fetch-depth: 0
       - name: Ensure Xcode tools
         run: sudo xcode-select --install || true
-      - name: Install deps
-        run: brew install pkg-config
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
