@@ -75,8 +75,8 @@ jobs:
           path: dist/
           retention-days: 1
   
-  build-macos-amd64:
-    runs-on: macos-13
+  build-macos-intel:
+    runs-on: macos-15-intel
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -105,7 +105,7 @@ jobs:
           retention-days: 1
 
   release:
-    needs: [build-linux-windows, build-macos-amd64, build-macos-arm64]
+    needs: [build-linux-windows, build-macos-intel, build-macos-arm64]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
