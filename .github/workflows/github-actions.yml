@@ -53,6 +53,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Ensure Xcode tools
+        run: sudo xcode-select --install || true
+      - name: Install deps
+        run: brew install pkg-config
 
       - name: Set up environment
         uses: actions/setup-go@v5
@@ -82,7 +86,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+      - name: Ensure Xcode tools
+        run: sudo xcode-select --install || true
+      - name: Install deps
+        run: brew install pkg-config
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
@@ -92,7 +99,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: release --clean --config .goreleaser-macos-amd64.yaml  
+          args: release --clean --config .goreleaser-macos-intel.yaml  
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
