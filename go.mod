@@ -7,6 +7,7 @@ require (
 	github.com/dhkimxx/GoChzzkChatCrawler v0.0.0-20250212124928-852ff59b9c6e
 	github.com/faiface/beep v1.1.0
 	github.com/joeyak/go-twitch-eventsub/v3 v3.0.1
+	github.com/johanvandegriff/youtube-live-chat-downloader/v2 v2.1.1
 	github.com/mozillazg/go-unidecode v0.2.0
 	github.com/steampoweredtaco/gotiktoklive v0.0.4
 )
