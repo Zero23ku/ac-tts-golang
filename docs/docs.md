@@ -86,3 +86,16 @@ To obtain your livestream id, check the url of your livestream, the last part is
 ## Random pitch per user
 
 As the name says, each user get a random Pitch and it stays the same until the TTS is restarted
+
+## Whitelist
+
+If you activate the Whitelist option, only the users in the input field will be able to trigger the TTS (It is also compatible alongsig the command function).
+
+The users should be separated by a , example:
+
+```
+user_1,user_2,user_3
+```
+Lastly, click the Update whitelist button to make the Whitelist effective.
+
+**You should update the whitelist everytime you add/remove a user**
