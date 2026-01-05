@@ -19,7 +19,7 @@ builds:
   - id: darwin-arm64
     env:
       - CGO_ENABLED=1
-      - CGO_LDFLAGS=-framework Cocoa -framework OpenGL
+      - CGO_LDFLAGS=-framework Cocoa -framework OpenGL -lglfw
     goos:
       - darwin
     goarch:
