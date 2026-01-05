@@ -25,35 +25,6 @@ builds:
       - amd64
     binary: "ac-tts-{{ .Version }}"
 
-  - id: windows
-    env:
-      - CGO_ENABLED=1
-      - CC=x86_64-w64-mingw32-gcc
-    goos:
-      - windows
-    goarch:
-      - amd64
-    binary: "ac-tts-{{ .Version }}"
-
-  #- id: darwin-amd64
-  #  env:
-  #    - CGO_ENABLED=1
-  #  goos:
-  #    - darwin
-  #  goarch:
-  #    - amd64
-  #  binary: "ac-tts-{{ .Version }}"
-
-  #- id: darwin-arm64
-  #  env:
-  #    - CGO_ENABLED=1
-  #  goos:
-  #    - darwin
-  #  goarch:
-  #    - arm64
-  #  binary: "ac-tts-{{ .Version }}"
-
-
 archives:
   - formats: [tar.gz]
     # this name template makes the OS and Arch compatible with the results of `uname`.

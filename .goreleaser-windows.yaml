@@ -17,12 +17,12 @@ before:
 
 builds:
 
-
-  - id: darwin-amd64
+  - id: windows
     env:
       - CGO_ENABLED=1
+      - CC=x86_64-w64-mingw32-gcc
     goos:
-      - darwin
+      - windows
     goarch:
       - amd64
     binary: "ac-tts-{{ .Version }}"

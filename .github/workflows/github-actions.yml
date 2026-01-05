@@ -6,7 +6,7 @@ on:
       - "v*"
 
 jobs:
-  build-linux-windows:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -28,13 +28,13 @@ jobs:
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.4'
+          go-version: '1.25.5'
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: release --clean --split
+          args: release --clean --config .goreleaser-linux.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
@@ -42,77 +42,11 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-linux-windows
+          name: dist-linux
           path: dist/
           retention-days: 1
 
-  build-macos-arm64:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Ensure Xcode tools
-        run: sudo xcode-select --install || true
-      - name: Install deps
-        run: brew install pkg-config
-
-      - name: Set up environment
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.25.4'
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          version: latest
-          args: release --clean --config .goreleaser-macos-arm64.yaml  
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-macos
-          path: dist/
-          retention-days: 1
-  
-  build-macos-intel:
-    runs-on: macos-15-intel
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Ensure Xcode tools
-        run: sudo xcode-select --install || true
-      - name: Install deps
-        run: brew install pkg-config
-      - name: Set up environment
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.25.4'
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          version: latest
-          args: release --clean --config .goreleaser-macos-intel.yaml  
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-macos
-          path: dist/
-          retention-days: 1
-
-  release:
-    needs: [build-linux-windows, build-macos-intel, build-macos-arm64]
+  build-windows:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -120,28 +54,128 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download Linux/Windows artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-linux-windows
-          path: dist/
-
-      - name: Download macOS artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-macos
-          path: dist/
-          merge-multiple: true
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            pkg-config \
+            libasound2-dev \
+            libgl1-mesa-dev \
+            libglfw3-dev \
+            xorg-dev \
+            gcc-mingw-w64-x86-64
 
       - name: Set up environment
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.4'
+          go-version: '1.25.5'
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: continue --merge
+          args: release --clean --config .goreleaser-windows.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-windows
+          path: dist/
+          retention-days: 1
+
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        goarch: [amd64, arm64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.5'
+
+      - name: Build macOS ${{ matrix.goarch }}
+        run: |
+          mkdir -p dist/ac-tts_darwin_${{ matrix.goarch }}
+          
+          CGO_ENABLED=1 GOOS=darwin GOARCH=${{ matrix.goarch }} go build \
+            -ldflags "-X main.Version=${{ github.ref_name }}" \
+            -o dist/ac-tts_darwin_${{ matrix.goarch }}/ac-tts \
+            main.go
+          
+          cd dist/ac-tts_darwin_${{ matrix.goarch }}
+          shasum -a 256 ac-tts > ac-tts_${{ matrix.goarch }}.sha256
+          cd ../..
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-macos-${{ matrix.goarch }}
+          path: dist/ac-tts_darwin_${{ matrix.goarch }}/
+          retention-days: 1
+
+  upload-release:
+    needs: [build-linux, build-windows, build-macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-linux
+          path: dist-linux/
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-windows
+          path: dist-windows/
+
+      - name: Download macOS amd64 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-macos-amd64
+          path: dist-macos-amd64/
+
+      - name: Download macOS arm64 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-macos-arm64
+          path: dist-macos-arm64/
+
+      - name: List all downloaded files
+        run: |
+          echo "=== Linux ==="
+          find dist-linux/ -type f | sort
+          echo "=== Windows ==="
+          find dist-windows/ -type f | sort
+          echo "=== macOS amd64 ==="
+          find dist-macos-amd64/ -type f | sort
+          echo "=== macOS arm64 ==="
+          find dist-macos-arm64/ -type f | sort
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist-linux/**/*
+            dist-windows/**/*
+            dist-macos-amd64/**/*
+            dist-macos-arm64/**/*
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
