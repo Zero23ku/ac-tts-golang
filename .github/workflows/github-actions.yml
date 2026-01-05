@@ -84,7 +84,7 @@ jobs:
           retention-days: 1
 
   upload-release:
-    needs: [build-macos] 
+    needs: [build-macos]  
     runs-on: ubuntu-latest
     permissions:
       contents: write
