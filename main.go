@@ -80,7 +80,7 @@ func main() {
 
 	wave := ani.AnimaleseFunc("test", true, 1.0)
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
-	if err != nil {
+	if err != nil {{"twitch_config":{"read_all_chat":false,"redeem_name":"hola que ase"},"whitelist_config":{"raw_wh
 		logging.CreateLog("main - testing Animalese", err)
 		log.Fatal(err)
 	}
