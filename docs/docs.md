@@ -46,15 +46,7 @@ To connect to your Tiktok live chat, first you need to be already livestreaming 
 
 ## Connect to Youtube
 
-Due to how Youtube's chat works, this implementation is way more complicated than the other platforms, I'm still looking for options, so this may or may not change in the future.
-
-To connect to your Youtube's livestream chat, you need to enter your livestream url (Ex: https://youtube.com/watch?v=rnXIjl_Rzy4) and your Youtube's API key.
-
-Due to Youtube's Api key limits and quota, for now, the best way to ensure this works for everyone is that **every user need to bring they own API Key**
-
-To learn how to obtain your own Youtube's API key you can [follow official guide](https://developers.google.com/youtube/registering_an_application) or [check this video](https://www.youtube.com/watch?v=EPeDTRNKAVo)
-
-**Please be careful, don't share your API Key, treat it as any other of your passwords, this app doesn't save your API Key so you will need to use it every time you want to connect it to your chat**
+You just need to enter the URL of your Youtube's stream (You must be already streaming)
 
 ![Youtube's window](./img/youtube-window.png)
 
