@@ -19,6 +19,7 @@ import (
 	"ac-tts/internal/assets"
 	"ac-tts/internal/chzzk"
 	"ac-tts/internal/common"
+	"ac-tts/internal/config"
 	"ac-tts/internal/github"
 	"ac-tts/internal/local"
 	"ac-tts/internal/logging"
@@ -146,7 +147,9 @@ func main() {
 			container.NewVBox(content, mainContainer, local.LocalButton, stt.STTButton),
 		),
 	)
-
+	w.SetOnClosed(func() {
+		config.SaveConfig(!common.IsRedeemOptionActiva, common.TwitchRedeemName.Text, whitelist.UserWhitelist)
+	})
 	w.ShowAndRun()
 
 }
