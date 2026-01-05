@@ -46,7 +46,7 @@ jobs:
           path: dist/
           retention-days: 1
 
-  build-macos:
+  build-macos-arm64:
     runs-on: macos-latest
     steps:
       - name: Checkout code
@@ -63,7 +63,36 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: release --clean --config .goreleaser-macos.yaml  
+          args: release --clean --config .goreleaser-macos-arm64.yaml  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-macos
+          path: dist/
+          retention-days: 1
+  
+  build-macos-amd64:
+    runs-on: macos-13
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.4'
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: release --clean --config .goreleaser-macos-amd64.yaml  
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
