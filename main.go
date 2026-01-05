@@ -27,6 +27,7 @@ import (
 	"ac-tts/internal/tiktok"
 	"ac-tts/internal/twitch"
 	"ac-tts/internal/web"
+	"ac-tts/internal/whitelist"
 	"ac-tts/internal/youtube"
 )
 
@@ -107,6 +108,7 @@ func main() {
 	common.InitCommandInput()
 	common.InitDocsButton()
 	common.InitRandomPitch()
+	whitelist.InitWhiteList()
 
 	commandContent := container.NewCenter(
 		container.NewVBox(
@@ -116,6 +118,11 @@ func main() {
 			),
 			common.RandomPitch,
 		),
+	)
+
+	mainContainer := container.NewVBox(
+		commandContent,
+		whitelist.WhiteListContainer,
 	)
 
 	local.AppReference = &a
@@ -136,7 +143,7 @@ func main() {
 		container.New(
 			layout.NewBorderLayout(nil, footer, nil, nil),
 			footer,
-			container.NewVBox(content, commandContent, local.LocalButton, stt.STTButton),
+			container.NewVBox(content, mainContainer, local.LocalButton, stt.STTButton),
 		),
 	)
 

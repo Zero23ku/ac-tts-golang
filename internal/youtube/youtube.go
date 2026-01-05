@@ -19,6 +19,7 @@ import (
 	"ac-tts/internal/common"
 	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
+	"ac-tts/internal/whitelist"
 )
 
 var API_KEY = ""
@@ -88,6 +89,7 @@ var ConnectYTButton *widget.Button
 var AppReference *fyne.App
 var CTX context.Context
 
+// No se usa, pero lo dejo en caso de que la librería que se usa actualmente para el chat dejase de funcionar
 func GetYTChannelInfo(ctx context.Context) {
 
 	client := &http.Client{}
@@ -274,19 +276,37 @@ func connectToChat() {
 				continuation = newContinuation
 
 				for _, msg := range chat {
-					/*fmt.Print(msg.Timestamp, " | ")
-					fmt.Println(msg.AuthorName, ": ", msg.Message)*/
+					/*fmt.Print(msg.Timestamp, " | ")*/
+					//fmt.Println(msg.AuthorName, ": ", msg.Message)
+					author := msg.AuthorName[1:]
 					if common.IsTTSCommandActive() && strings.HasPrefix(msg.Message, common.GetTTSCommand()) {
 						if common.IsPitchRandom {
-							reproductor.Reproduce(msg.Message, msg.AuthorName, common.GetRandomPitch(), common.IsPitchRandom)
+							if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(author) {
+								reproductor.Reproduce(msg.Message, author, common.GetRandomPitch(), common.IsPitchRandom)
+							} else if !whitelist.IsWhitelistActive {
+								reproductor.Reproduce(msg.Message, author, common.GetRandomPitch(), common.IsPitchRandom)
+							}
+
 						} else {
-							reproductor.Reproduce(msg.Message, msg.AuthorName, common.Pitch, common.IsPitchRandom)
+							if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(author) {
+								reproductor.Reproduce(msg.Message, author, common.Pitch, common.IsPitchRandom)
+							} else if !whitelist.IsWhitelistActive {
+								reproductor.Reproduce(msg.Message, author, common.Pitch, common.IsPitchRandom)
+							}
 						}
 					} else if !common.IsTTSCommandActive() {
 						if common.IsPitchRandom {
-							reproductor.Reproduce(msg.Message, msg.AuthorName, common.GetRandomPitch(), common.IsPitchRandom)
+							if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(author) {
+								reproductor.Reproduce(msg.Message, author, common.GetRandomPitch(), common.IsPitchRandom)
+							} else if !whitelist.IsWhitelistActive {
+								reproductor.Reproduce(msg.Message, author, common.GetRandomPitch(), common.IsPitchRandom)
+							}
 						} else {
-							reproductor.Reproduce(msg.Message, msg.AuthorName, common.Pitch, common.IsPitchRandom)
+							if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(author) {
+								reproductor.Reproduce(msg.Message, author, common.Pitch, common.IsPitchRandom)
+							} else if !whitelist.IsWhitelistActive {
+								reproductor.Reproduce(msg.Message, author, common.Pitch, common.IsPitchRandom)
+							}
 						}
 					}
 

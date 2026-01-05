@@ -15,6 +15,7 @@ import (
 	"ac-tts/internal/common"
 	"ac-tts/internal/logging"
 	"ac-tts/internal/reproductor"
+	"ac-tts/internal/whitelist"
 )
 
 var tiktokWindowIsOpen = false
@@ -53,16 +54,33 @@ func connectToTikTokChat(username string, ctx context.Context) {
 					chatter := gotiktoklive.ChatEvent(e).User.Nickname
 					if common.IsTTSCommandActive() && strings.HasPrefix(tiktokMsg, common.GetTTSCommand()) {
 						if common.IsPitchRandom {
-							reproductor.Reproduce(tiktokMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
+
+							if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(chatter) {
+								reproductor.Reproduce(tiktokMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
+							} else if !whitelist.IsWhitelistActive {
+								reproductor.Reproduce(tiktokMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
+							}
 						} else {
-							reproductor.Reproduce(tiktokMsg, chatter, common.Pitch, common.IsPitchRandom)
+							if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(chatter) {
+								reproductor.Reproduce(tiktokMsg, chatter, common.Pitch, common.IsPitchRandom)
+							} else if !whitelist.IsWhitelistActive {
+								reproductor.Reproduce(tiktokMsg, chatter, common.Pitch, common.IsPitchRandom)
+							}
 						}
 
 					} else if !common.IsTTSCommandActive() {
 						if common.IsPitchRandom {
-							reproductor.Reproduce(tiktokMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
+							if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(chatter) {
+								reproductor.Reproduce(tiktokMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
+							} else if !whitelist.IsWhitelistActive {
+								reproductor.Reproduce(tiktokMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
+							}
 						} else {
-							reproductor.Reproduce(tiktokMsg, chatter, common.Pitch, common.IsPitchRandom)
+							if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(chatter) {
+								reproductor.Reproduce(tiktokMsg, chatter, common.Pitch, common.IsPitchRandom)
+							} else if !whitelist.IsWhitelistActive {
+								reproductor.Reproduce(tiktokMsg, chatter, common.Pitch, common.IsPitchRandom)
+							}
 						}
 					}
 

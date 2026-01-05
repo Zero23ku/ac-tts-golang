@@ -14,6 +14,7 @@ import (
 
 	"ac-tts/internal/assets"
 	"ac-tts/internal/config"
+	"ac-tts/internal/whitelist"
 )
 
 var TwitchConnectButton *widget.Button
@@ -83,7 +84,7 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 		if IsRedeemOptionActiva {
 			redeemText = TwitchRedeemName.Text
 		}
-		config.SaveConfig(!IsRedeemOptionActiva, redeemText)
+		config.SaveConfig(!IsRedeemOptionActiva, redeemText, whitelist.UserWhitelist)
 		if IsRedeemOptionActiva && TwitchRedeemName.Text == "" {
 			initTwitchErrorWindow(app, "You must enter a Redeem's name")
 			TwitchErrorWindow.Show()
