@@ -46,13 +46,17 @@ jobs:
           path: dist/
           retention-days: 1
 
-  build-macos:
+  build-macos-arm64:
     runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Ensure Xcode tools
+        run: sudo xcode-select --install || true
+      - name: Install deps
+        run: brew install pkg-config
 
       - name: Set up environment
         uses: actions/setup-go@v5
@@ -63,7 +67,39 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: release --clean --split
+          args: release --clean --config .goreleaser-macos-arm64.yaml  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-macos
+          path: dist/
+          retention-days: 1
+  
+  build-macos-intel:
+    runs-on: macos-15-intel
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Ensure Xcode tools
+        run: sudo xcode-select --install || true
+      - name: Install deps
+        run: brew install pkg-config
+      - name: Set up environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.4'
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: release --clean --config .goreleaser-macos-intel.yaml  
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
@@ -76,7 +112,7 @@ jobs:
           retention-days: 1
 
   release:
-    needs: [build-linux-windows, build-macos]
+    needs: [build-linux-windows, build-macos-intel, build-macos-arm64]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
