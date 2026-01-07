@@ -1,6 +1,7 @@
 package whitelist
 
 import (
+	"ac-tts/internal/config"
 	"slices"
 	"strings"
 
@@ -25,16 +26,18 @@ func InitWhiteList() {
 	whiteList.SetPlaceHolder("Enter usernames separated by ,")
 	whiteList.Resize(fyne.NewSize(200, 0)) // Establecer ancho mínimo
 	entryContainer := container.NewStack(whiteList)
-
+	configs, err := config.ReadConfig()
+	if err != nil {
+		//TODO
+	}
+	whiteList.Text = configs.WhitelistConfig.RawWhitelist
 	updateWhitelist = widget.NewButton("Update whitelist", func() {
 		rawUsers := whiteList.Text
 		users := strings.Split(rawUsers, ",")
 		var localWhitelist []string
 		for _, user := range users {
 			user = strings.ToLower(strings.TrimSpace(user))
-			if !IsUserInWhitelist(user) {
-				localWhitelist = append(localWhitelist, user)
-			}
+			localWhitelist = append(localWhitelist, user)
 		}
 		UserWhitelist = localWhitelist
 		//TODO: Solucionar
@@ -54,6 +57,5 @@ func InitWhiteList() {
 
 func IsUserInWhitelist(user string) bool {
 	user = strings.ToLower(strings.TrimSpace(user))
-
 	return slices.Contains(UserWhitelist, user)
 }

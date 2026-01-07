@@ -118,38 +118,40 @@ func SubscribeToChat(token string) {
 					}
 					splitted := strings.Split(line, "#")
 					if len(splitted) == 2 {
+						user := strings.Split(splitted[0], "!")[0]
+						user = user[1:]
 						message := strings.Split(splitted[1], ":")
 						if len(message) == 2 {
 							if Active {
 								chatMsg := message[1]
 								if common.IsTTSCommandActive() && strings.HasPrefix(chatMsg, common.GetTTSCommand()) {
 									if common.IsPitchRandom {
-										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(message[0]) {
-											reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(user) {
+											reproductor.Reproduce(chatMsg, user, common.GetRandomPitch(), common.IsPitchRandom)
 										} else if !whitelist.IsWhitelistActive {
-											reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+											reproductor.Reproduce(chatMsg, user, common.GetRandomPitch(), common.IsPitchRandom)
 										}
 
 									} else {
 
-										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(message[0]) {
-											reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(user) {
+											reproductor.Reproduce(chatMsg, user, common.Pitch, common.IsPitchRandom)
 										} else if !whitelist.IsWhitelistActive {
-											reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+											reproductor.Reproduce(chatMsg, user, common.Pitch, common.IsPitchRandom)
 										}
 									}
 								} else if !common.IsTTSCommandActive() {
 									if common.IsPitchRandom {
-										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(message[0]) {
-											reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(user) {
+											reproductor.Reproduce(chatMsg, user, common.GetRandomPitch(), common.IsPitchRandom)
 										} else if !whitelist.IsWhitelistActive {
-											reproductor.Reproduce(chatMsg, message[0], common.GetRandomPitch(), common.IsPitchRandom)
+											reproductor.Reproduce(chatMsg, user, common.GetRandomPitch(), common.IsPitchRandom)
 										}
 									} else {
-										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(message[0]) {
-											reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+										if whitelist.IsWhitelistActive && whitelist.IsUserInWhitelist(user) {
+											reproductor.Reproduce(chatMsg, user, common.Pitch, common.IsPitchRandom)
 										} else if !whitelist.IsWhitelistActive {
-											reproductor.Reproduce(chatMsg, message[0], common.Pitch, common.IsPitchRandom)
+											reproductor.Reproduce(chatMsg, user, common.Pitch, common.IsPitchRandom)
 										}
 									}
 								}
