@@ -2,7 +2,6 @@ package reproductor
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -49,7 +48,6 @@ func SaveAsWav(text string, fileName string) {
 		log.Fatal(err)
 	}
 	defer file.Close()
-	fmt.Println("Guardando archivo: " + fileName)
 	if err := wav.Encode(file, streamer, format); err != nil {
 		log.Fatal(err)
 	}
