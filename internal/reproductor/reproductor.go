@@ -6,12 +6,15 @@ import (
 	"os"
 	"sync"
 	"time"
+	"unicode"
 
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
-	"github.com/fiam/gounidecode/unidecode"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 
 	"ac-tts/internal/animalese"
 	"ac-tts/internal/assets"
@@ -32,7 +35,7 @@ func SaveAsWav(text string, fileName string) {
 		log.Fatal(err)
 		panic(err)
 	}
-	text = removeAccents(text)
+	text, err = unicodeToLatin(text)
 	wave := ani.AnimaleseFunc(text, true, common.Pitch)
 
 	streamer, format, err := wav.Decode(bytes.NewReader(wave))
@@ -63,7 +66,7 @@ func Reproduce(text string, user string, pitch float64, isRandomPitch bool) {
 		log.Fatal(err)
 		panic(err)
 	}
-	text = removeAccents(text)
+	text, err = unicodeToLatin(text)
 	var actualPitch float64
 	if isRandomPitch {
 		actualPitch = getPitchForUser(user, pitch)
@@ -113,6 +116,14 @@ func InitSpeaker(format beep.Format) {
 	})
 }
 
-func removeAccents(text string) string {
-	return unidecode.Unidecode(text) // One-liner!
+func unicodeToLatin(s string) (string, error) {
+	// Normalizar y remover diacríticos
+	t := transform.Chain(
+		norm.NFD,
+		runes.Remove(runes.In(unicode.Mn)), // Remover marcas diacríticas
+		norm.NFC,
+	)
+
+	result, _, err := transform.String(t, s)
+	return result, err
 }
