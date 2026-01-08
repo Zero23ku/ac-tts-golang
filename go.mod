@@ -6,10 +6,10 @@ require (
 	fyne.io/fyne/v2 v2.7.1
 	github.com/dhkimxx/GoChzzkChatCrawler v0.0.0-20250212124928-852ff59b9c6e
 	github.com/faiface/beep v1.1.0
-	github.com/fiam/gounidecode v0.0.0-20150629112515-8deddbd03fec
 	github.com/joeyak/go-twitch-eventsub/v3 v3.0.1
 	github.com/johanvandegriff/youtube-live-chat-downloader/v2 v2.1.1
 	github.com/steampoweredtaco/gotiktoklive v0.0.4
+	golang.org/x/text v0.22.0
 )
 
 require (
@@ -55,7 +55,6 @@ require (
 	golang.org/x/mobile v0.0.0-20231127183840-76ac6878050a // indirect
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
