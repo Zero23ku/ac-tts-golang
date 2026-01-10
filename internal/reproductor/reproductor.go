@@ -2,7 +2,6 @@ package reproductor
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -65,7 +64,6 @@ func Reproduce(text string, user string, pitch float64, isRandomPitch bool) {
 		panic(err)
 	}
 	text = unicodeToLatin(text)
-	fmt.Println(text)
 	var actualPitch float64
 	if isRandomPitch {
 		actualPitch = getPitchForUser(user, pitch)

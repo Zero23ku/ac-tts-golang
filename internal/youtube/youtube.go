@@ -88,6 +88,7 @@ var YoutubeWindow fyne.Window
 var ConnectYTButton *widget.Button
 var AppReference *fyne.App
 var CTX context.Context
+var YoutubeErrorWindow fyne.Window
 
 // No se usa, pero lo dejo en caso de que la librería que se usa actualmente para el chat dejase de funcionar
 func GetYTChannelInfo(ctx context.Context) {
@@ -135,19 +136,25 @@ func GetYTChannelInfo(ctx context.Context) {
 				req, err := http.NewRequest("GET", chatUrl, nil)
 
 				if err != nil {
-					log.Fatal(err)
+					initErrorWindow(*AppReference, err.Error())
+					YoutubeErrorWindow.Show()
+					return
 				}
 
 				resp, err := client.Do(req)
 
 				if err != nil {
-					log.Fatal("Error sending request", err)
+					initErrorWindow(*AppReference, err.Error())
+					YoutubeErrorWindow.Show()
+					return
 				}
 				defer resp.Body.Close()
 				var response LivechatResponse
 
 				if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-					log.Fatal(err)
+					initErrorWindow(*AppReference, err.Error())
+					YoutubeErrorWindow.Show()
+					return
 				}
 				for i := 0; i < len(response.Items); i++ {
 					ytMsg := response.Items[i].Snippet.TextMessageDetails.MessageText
@@ -256,7 +263,9 @@ func connectToChat() {
 	continuation, cfg, error := YtChat.ParseInitialData("https://www.youtube.com/watch?v=" + VIDEO_ID)
 	if error != nil {
 		logging.CreateLog("Youtube getting chat- ", error)
-		log.Fatal(error)
+		initErrorWindow(*AppReference, "Error connecting to livestream, please try again.")
+		YoutubeErrorWindow.Show()
+		//log.Fatal(error)
 	}
 	go func() {
 		for {
@@ -267,11 +276,15 @@ func connectToChat() {
 				chat, newContinuation, error := YtChat.FetchContinuationChat(continuation, cfg)
 				if error == YtChat.ErrLiveStreamOver {
 					logging.CreateLog("Youtube livestream - ", error)
-					log.Fatal("Live stream over")
+					initErrorWindow(*AppReference, "Livestream is over")
+					YoutubeErrorWindow.Show()
+					return
+
 				}
 				if error != nil {
-					//log.Print(error)
-					continue
+					initErrorWindow(*AppReference, error.Error())
+					YoutubeErrorWindow.Show()
+					return
 				}
 				continuation = newContinuation
 
@@ -316,4 +329,9 @@ func connectToChat() {
 
 		}
 	}()
+}
+
+func initErrorWindow(app fyne.App, msg string) {
+	YoutubeErrorWindow = app.NewWindow("Error!")
+	YoutubeErrorWindow.SetContent(widget.NewLabel(msg))
 }
