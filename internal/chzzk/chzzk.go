@@ -65,17 +65,23 @@ func connectToChzzk(liveid string, ctx context.Context) {
 	})
 
 	go func() {
-		// Start crawling
+		defer func() {
+			if r := recover(); r != nil {
+				CHZZKErrorWindow.Show()
+				return
+			}
+		}()
+
 		err := crawlerClient.Run()
 		if err != nil {
 			CHZZKErrorWindow.Show()
 			return
 		}
+
 		for {
 			select {
 			case <-ctx.Done():
 				return
-
 			}
 		}
 	}()

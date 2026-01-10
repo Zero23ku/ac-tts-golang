@@ -64,5 +64,5 @@ type Release struct {
 	ZipballUrl string `json:"zipball_url"`
 	TarballUrl string `json:"tarball_url"`
 	Commit     Commit `json:"commit"`
-	nodeId     string `json:"node_id"`
+	NodeId     string `json:"node_id"`
 }

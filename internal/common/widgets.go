@@ -109,15 +109,16 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 	TwitchConfWindow.Resize(fyne.NewSize(400, 100))
 	configs, err := config.ReadConfig()
 	if err != nil {
-		initTwitchErrorWindow(app, "Error reading tts_config.json")
-		TwitchErrorWindow.Show()
+		//TODO: Hacer algo eventualmente
+		//initTwitchErrorWindow(app, "Error reading tts_config.json")
+		//TwitchErrorWindow.Show()
+	}
+
+	if configs.TwitchConfig.ReadAllChat {
+		radio.SetSelected("Read all messages in chat")
 	} else {
-		if configs.TwitchConfig.ReadAllChat {
-			radio.SetSelected("Read all messages in chat")
-		} else {
-			radio.SetSelected("Use channel points")
-			TwitchRedeemName.SetText(configs.TwitchConfig.RedeemName)
-		}
+		radio.SetSelected("Use channel points")
+		TwitchRedeemName.SetText(configs.TwitchConfig.RedeemName)
 	}
 
 }
