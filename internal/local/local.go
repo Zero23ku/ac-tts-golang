@@ -1,6 +1,7 @@
 package local
 
 import (
+	"fmt"
 	"image/color"
 	"path/filepath"
 	"strings"
@@ -117,6 +118,7 @@ func initLocalWindow(app fyne.App) {
 				time.Sleep(500 * time.Millisecond)
 				continue
 			}
+			fmt.Println(line)
 			reproductor.Reproduce(line, "", common.Pitch, false)
 
 		}
