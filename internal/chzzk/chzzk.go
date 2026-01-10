@@ -2,6 +2,7 @@ package chzzk
 
 import (
 	"context"
+	"log"
 	"strings"
 	"time"
 
@@ -65,17 +66,24 @@ func connectToChzzk(liveid string, ctx context.Context) {
 	})
 
 	go func() {
-		// Start crawling
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("Crawler panic recuperado: %v", r)
+				CHZZKErrorWindow.Show()
+			}
+		}()
+
 		err := crawlerClient.Run()
 		if err != nil {
+			log.Printf("Error en crawler: %v", err)
 			CHZZKErrorWindow.Show()
 			return
 		}
+
 		for {
 			select {
 			case <-ctx.Done():
 				return
-
 			}
 		}
 	}()
