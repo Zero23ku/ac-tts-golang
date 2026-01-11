@@ -3,6 +3,7 @@ package youtube
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -157,8 +158,10 @@ func GetYTChannelInfo(ctx context.Context) {
 					return
 				}
 				for i := 0; i < len(response.Items); i++ {
+
 					ytMsg := response.Items[i].Snippet.TextMessageDetails.MessageText
 					chatter := response.Items[i].AuthorDetails.DisplayName
+					fmt.Println(ytMsg)
 					if common.IsTTSCommandActive() && strings.HasPrefix(ytMsg, common.GetTTSCommand()) {
 						if common.IsPitchRandom {
 							reproductor.Reproduce(ytMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
@@ -204,8 +207,15 @@ func initYoutubeWindow(app fyne.App) {
 
 	ytApiKeySubmit := widget.NewButton("Connect", func() {
 		//API_KEY = ytApiKeyInput.Text
+		param, err := validateYTUrl(ytVideoInput.Text)
+		if err != nil {
+			initErrorWindow(app, err.Error())
+			return
+		}
 
-		ytID, err := getYTID(ytVideoInput.Text)
+		ytUrl := "https://www.youtube.com/watch?v=" + param
+
+		ytID, err := getYTID(ytUrl)
 		if err != nil && ytID == "" {
 			logging.CreateLog("Youtube - ", err)
 		}
@@ -230,6 +240,25 @@ func initYoutubeWindow(app fyne.App) {
 
 	YoutubeWindow.SetContent(container.NewVBox( /*form,*/ formVide, centeredButton))
 	YoutubeWindow.Resize(fyne.NewSize(400, 100))
+}
+
+func validateYTUrl(rawUrl string) (string, error) {
+	url, err := url.ParseRequestURI(rawUrl)
+	if err != nil {
+		return "", err
+	}
+	hostname := strings.Split(url.Host, ".")[1]
+	if hostname != "youtube" {
+		return "", errors.New("URl must be from Youtube")
+	}
+
+	param := url.Query().Get("v")
+	if param == "" {
+		path := strings.Split(url.Path, "/")
+		param = path[len(path)-1]
+	}
+	return param, nil
+
 }
 
 func InitConnectYTButton() {
