@@ -161,7 +161,6 @@ func GetYTChannelInfo(ctx context.Context) {
 
 					ytMsg := response.Items[i].Snippet.TextMessageDetails.MessageText
 					chatter := response.Items[i].AuthorDetails.DisplayName
-					fmt.Println(ytMsg)
 					if common.IsTTSCommandActive() && strings.HasPrefix(ytMsg, common.GetTTSCommand()) {
 						if common.IsPitchRandom {
 							reproductor.Reproduce(ytMsg, chatter, common.GetRandomPitch(), common.IsPitchRandom)
