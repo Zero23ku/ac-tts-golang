@@ -209,6 +209,7 @@ func initYoutubeWindow(app fyne.App) {
 		param, err := validateYTUrl(ytVideoInput.Text)
 		if err != nil {
 			initErrorWindow(app, err.Error())
+			YoutubeErrorWindow.Show()
 			return
 		}
 
@@ -248,13 +249,12 @@ func validateYTUrl(rawUrl string) (string, error) {
 	}
 	hostname := strings.Split(url.Host, ".")[1]
 	if hostname != "youtube" {
-		return "", errors.New("URl must be from Youtube")
+		return "", errors.New("URL must be from Youtube")
 	}
 
 	param := url.Query().Get("v")
 	if param == "" {
-		path := strings.Split(url.Path, "/")
-		param = path[len(path)-1]
+		return "", errors.New("URL must be https://www.youtube.com/watch?v=<id-video>")
 	}
 	return param, nil
 
