@@ -69,7 +69,7 @@ First, you need to select file in which the STT tool will output the text, and t
 This option was developed and tested using [Closed Captioning OBS Plugin](https://github.com/ratwithacompiler/OBS-captions-plugin)
 
 
-As long as you have **Write instantly** option selected and the file format is **Text only** or **SubRip subtitle .str**
+As long as you have **Write instantly** option selected and the file format is **Text only** or **SubRip subtitle .srt**
 
 ![CCOBS config](./img/stt-config.png)
 
@@ -100,3 +100,4 @@ Lastly, click the Update whitelist button to make the Whitelist effective.
 
 
 **You should update the whitelist everytime you add/remove a user**
+
