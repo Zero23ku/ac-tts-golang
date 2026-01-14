@@ -58,7 +58,7 @@ Also, you can save the audio clips as wav files, first you need to enter a filen
 
 ![Read text offline's window](./img/read-offline.png)
 
-## Read from TTS
+## Read from STT
 
 This option exists if you want to use this TTS alongside a STT tool (Speech-to-text). This will work with any STT tool that output a plain txt file or a standard .str file
 
@@ -97,5 +97,6 @@ The users should be separated by a , example:
 user_1,user_2,user_3
 ```
 Lastly, click the Update whitelist button to make the Whitelist effective.
+
 
 **You should update the whitelist everytime you add/remove a user**
