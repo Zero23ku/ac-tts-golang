@@ -307,24 +307,19 @@ func subscribeToEvent(accessToken string, userID string) {
 
 		case "channel.subscribe", "channel.subscription.gift", "channel.subscription.message":
 
-			if common.TwitchRedeemName.Text == r.Reward.Title {
-				if common.IsPitchRandom {
-					reproductor.Reproduce(r.UserInput, r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
-				} else {
-					reproductor.Reproduce(r.UserInput, r.UserName, common.Pitch, common.IsPitchRandom)
-				}
+			if common.IsPitchRandom {
+				reproductor.Reproduce("Haz recibido una suscripción!", r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
+			} else {
+				reproductor.Reproduce("Haz recibido una suscripción!", r.UserName, common.Pitch, common.IsPitchRandom)
 			}
 
 		case "channel.raid":
 
-			if common.TwitchRedeemName.Text == r.Reward.Title {
-				if common.IsPitchRandom {
-					reproductor.Reproduce(r.UserInput, r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
-				} else {
-					reproductor.Reproduce(r.UserInput, r.UserName, common.Pitch, common.IsPitchRandom)
-				}
+			if common.IsPitchRandom {
+				reproductor.Reproduce("Haz recibido una raid!", r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
+			} else {
+				reproductor.Reproduce("Haz recibido una raid!", r.UserName, common.Pitch, common.IsPitchRandom)
 			}
-
 		}
 
 	})
