@@ -86,10 +86,11 @@ func SubscribeToChat(token string) {
 		logging.CreateLog("twitch - couldn't get broadcaster info", err)
 		log.Fatal("Error retrieving broadcaster id", err)
 	}
-	if common.IsRedeemOptionActiva {
+	if common.IsRedeemOptionActive || common.IsRaidAlertOptionActive || common.IsBitAlertOptionActive || common.IsSubsAlertOptionActive {
 		subscribeToEvent(token, broadcasterId)
-		common.SetConnected()
-	} else {
+
+	}
+	if !common.IsRedeemOptionActive {
 		conn, err := net.Dial("tcp", IRC_TWITCH_SERVER)
 		if err != nil {
 			logging.CreateLog("twitch - couldn't connect to twitch chat", err)
@@ -99,7 +100,6 @@ func SubscribeToChat(token string) {
 		fmt.Fprintf(conn, "PASS %s\r\n", "oauth:"+token)
 		fmt.Fprintf(conn, "NICK %s\r\n", login)
 		fmt.Fprintf(conn, "JOIN #%s\r\n", login)
-		common.SetConnected()
 		reader := bufio.NewReader(conn)
 		go func() {
 			for {
@@ -168,6 +168,7 @@ func SubscribeToChat(token string) {
 		}()
 
 	}
+	common.SetConnected()
 
 }
 
@@ -238,8 +239,36 @@ func subscribeToEvent(accessToken string, userID string) {
 	})
 	client.OnWelcome(func(message twitch2.WelcomeMessage) {
 
-		events := []twitch2.EventSubscription{
-			"channel.channel_points_custom_reward_redemption.add",
+		var events []twitch2.EventSubscription
+
+		if common.IsRedeemOptionActive {
+			ev := []twitch2.EventSubscription{
+				"channel.channel_points_custom_reward_redemption.add",
+			}
+			events = append(events, ev...)
+		}
+
+		if common.IsBitAlertOptionActive {
+			ev := []twitch2.EventSubscription{
+				"channel.cheer",
+			}
+			events = append(events, ev...)
+		}
+
+		if common.IsRaidAlertOptionActive {
+			ev := []twitch2.EventSubscription{
+				"channel.raid",
+			}
+			events = append(events, ev...)
+		}
+
+		if common.IsSubsAlertOptionActive {
+			ev := []twitch2.EventSubscription{
+				"channel.subscribe",
+				"channel.subscription.gift",
+				"channel.subscription.message",
+			}
+			events = append(events, ev...)
 		}
 
 		for _, event := range events {
@@ -260,18 +289,44 @@ func subscribeToEvent(accessToken string, userID string) {
 	})
 
 	client.OnRawEvent(func(event string, metadata twitch2.MessageMetadata, subscription twitch2.PayloadSubscription) {
-		//fmt.Printf("EVENT[%s]: %s: %s\n", subscription.Type, metadata, event)
+		fmt.Printf("EVENT[%s]: %s: %s\n", subscription.Type, metadata, event)
 		var r RedemptionEvent
 		if err := json.Unmarshal([]byte(event), &r); err != nil {
 			panic(err)
 		}
-		if common.TwitchRedeemName.Text == r.Reward.Title {
-			if common.IsPitchRandom {
-				reproductor.Reproduce(r.UserInput, r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
-			} else {
-				reproductor.Reproduce(r.UserInput, r.UserName, common.Pitch, common.IsPitchRandom)
+		switch subscription.Type {
+		case "channel.channel_points_custom_reward_redemption.add":
+
+			if common.TwitchRedeemName.Text == r.Reward.Title {
+				if common.IsPitchRandom {
+					reproductor.Reproduce(r.UserInput, r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
+				} else {
+					reproductor.Reproduce(r.UserInput, r.UserName, common.Pitch, common.IsPitchRandom)
+				}
 			}
+
+		case "channel.subscribe", "channel.subscription.gift", "channel.subscription.message":
+
+			if common.TwitchRedeemName.Text == r.Reward.Title {
+				if common.IsPitchRandom {
+					reproductor.Reproduce(r.UserInput, r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
+				} else {
+					reproductor.Reproduce(r.UserInput, r.UserName, common.Pitch, common.IsPitchRandom)
+				}
+			}
+
+		case "channel.raid":
+
+			if common.TwitchRedeemName.Text == r.Reward.Title {
+				if common.IsPitchRandom {
+					reproductor.Reproduce(r.UserInput, r.UserName, common.GetRandomPitch(), common.IsPitchRandom)
+				} else {
+					reproductor.Reproduce(r.UserInput, r.UserName, common.Pitch, common.IsPitchRandom)
+				}
+			}
+
 		}
+
 	})
 
 	go func() {

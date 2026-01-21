@@ -27,6 +27,9 @@ var InputCommand *widget.Entry
 var RandomPitch *widget.Check
 var DocsButton *widget.Button
 var AppReference *fyne.App
+var ActiveSubAlert *widget.Check
+var ActiveBitAlert *widget.Check
+var ActiveRaidAlert *widget.Check
 
 // Internal
 var leftSpacer *canvas.Rectangle
@@ -41,13 +44,17 @@ var ttsCommand = "!tts" //valor default
 // Twitch conf
 
 var TwitchConfWindow fyne.Window
-var IsRedeemOptionActiva = false
 var TwitchRedeemName *widget.Entry
 var ConnectToTwitch *widget.Button
 var IsTwitchConnected = false
 var TwitchActiveRedeemOption *widget.Check
 var twitchConfiWindowsIsOpen = false
 var TwitchErrorWindow fyne.Window
+
+var IsRedeemOptionActive = false
+var IsSubsAlertOptionActive = false
+var IsBitAlertOptionActive = false
+var IsRaidAlertOptionActive = false
 
 func initTwitchConfWindow(app fyne.App, onClick func()) {
 	TwitchConfWindow = app.NewWindow("Twitch configuration")
@@ -65,12 +72,24 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 		widget.NewFormItem("Twitch Redeem's name", TwitchRedeemName),
 	)
 
+	ActiveSubAlert = widget.NewCheck("Activate subscription alerts", func(value bool) {
+		IsSubsAlertOptionActive = value
+	})
+
+	ActiveBitAlert = widget.NewCheck("Activate bits alerts", func(value bool) {
+		IsBitAlertOptionActive = value
+	})
+
+	ActiveRaidAlert = widget.NewCheck("Activate raid alerts", func(value bool) {
+		IsRaidAlertOptionActive = value
+	})
+
 	radio := widget.NewRadioGroup([]string{"Read all messages in chat", "Use channel points"}, func(value string) {
 		if value == "Read all messages in chat" {
-			IsRedeemOptionActiva = false
+			IsRedeemOptionActive = false
 			TwitchRedeemName.Disable()
 		} else {
-			IsRedeemOptionActiva = true
+			IsRedeemOptionActive = true
 			TwitchRedeemName.Enable()
 		}
 		form.Refresh()
@@ -84,7 +103,7 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 			redeemText = TwitchRedeemName.Text
 		}*/
 		//config.SaveConfig(!IsRedeemOptionActiva, redeemText, whitelist.UserWhitelist)
-		if IsRedeemOptionActiva && TwitchRedeemName.Text == "" {
+		if IsRedeemOptionActive && TwitchRedeemName.Text == "" {
 			initTwitchErrorWindow(app, "You must enter a Redeem's name")
 			TwitchErrorWindow.Show()
 			return
@@ -102,6 +121,9 @@ func initTwitchConfWindow(app fyne.App, onClick func()) {
 		container.NewVBox(
 			radio,
 			form,
+			container.NewHBox(
+				ActiveSubAlert, ActiveRaidAlert, ActiveBitAlert,
+			),
 			centeredButton,
 		),
 	)

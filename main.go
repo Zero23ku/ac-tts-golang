@@ -148,7 +148,7 @@ func main() {
 		),
 	)
 	w.SetOnClosed(func() {
-		config.SaveConfig(!common.IsRedeemOptionActiva, common.TwitchRedeemName.Text, whitelist.UserWhitelist)
+		config.SaveConfig(!common.IsRedeemOptionActive, common.TwitchRedeemName.Text, whitelist.UserWhitelist)
 	})
 	w.ShowAndRun()
 

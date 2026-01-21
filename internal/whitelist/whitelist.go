@@ -1,13 +1,14 @@
 package whitelist
 
 import (
-	"ac-tts/internal/config"
 	"slices"
 	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+
+	"ac-tts/internal/config"
 )
 
 var IsWhitelistActive = false
